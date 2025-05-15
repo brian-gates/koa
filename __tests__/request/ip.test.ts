@@ -1,4 +1,3 @@
-
 import assert from "node:assert/strict";
 import {Duplex} from "node:stream";
 import {describe, it} from "node:test";

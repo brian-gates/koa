@@ -1,4 +1,3 @@
-
 import CreateError from "http-errors";
 import assert from "node:assert/strict";
 import {once} from "node:events";
