@@ -9,12 +9,12 @@ import contentType from "content-type";
 import * as net from "net";
 import parse from "parseurl";
 import { URL, format as stringify } from "url";
-import searchParams from "./search-params.js";
+import searchParams from "~/search-params";
 
 import fresh from "fresh";
 import typeis from "type-is";
 import * as util from "util";
-import only from "./only.js";
+import only from "~/only";
 
 const IP = Symbol("context#ip");
 

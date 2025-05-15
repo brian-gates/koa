@@ -16,8 +16,8 @@ import statuses from "statuses";
 import { is as typeis } from "type-is";
 import * as util from "util";
 import vary from "vary";
-import isStream from "./is-stream.js";
-import only from "./only.js";
+import isStream from "~/is-stream";
+import only from "~/only";
 
 /**
  * Prototype.
