@@ -1,7 +1,7 @@
 "use strict";
 
 import assert from "node:assert/strict";
-import { describe, it } from "node:test";
+import {describe, it} from "node:test";
 import request from "supertest";
 import Koa from "../..";
 
@@ -30,7 +30,7 @@ describe("ctx.cookies", () => {
 
           app.use(async (ctx) => {
             try {
-              ctx.cookies.set("foo", "bar", { signed: true });
+              ctx.cookies.set("foo", "bar", {"signed": true});
             } catch (err: any) {
               ctx.body = err.message;
             }
@@ -48,7 +48,7 @@ describe("ctx.cookies", () => {
         app.keys = ["a", "b"];
 
         app.use(async (ctx) => {
-          ctx.cookies.set("name", "jon", { signed: true });
+          ctx.cookies.set("name", "jon", {"signed": true});
           ctx.status = 204;
         });
 
@@ -75,7 +75,7 @@ describe("ctx.cookies", () => {
         app.keys = ["a", "b"];
 
         app.use(async (ctx) => {
-          ctx.cookies.set("name", "jon", { signed: true });
+          ctx.cookies.set("name", "jon", {"signed": true});
           ctx.status = 204;
         });
 
@@ -107,7 +107,7 @@ describe("ctx.cookies", () => {
 
       app.use(async (ctx) => {
         ctx.cookies = {
-          set(key: string, value: string) {
+          set(key: string, value: string){
             ctx.set(key, value);
           },
         };

@@ -1,13 +1,13 @@
 "use strict";
 
 import assert from "node:assert/strict";
-import { describe, it } from "node:test";
+import {describe, it} from "node:test";
 import parseurl from "parseurl";
 import createContext from "../../test-helpers/context";
 
 describe("ctx.querystring", () => {
   it("should return the querystring", () => {
-    const ctx = createContext({ url: "/store/shoes?page=2&color=blue" });
+    const ctx = createContext({"url": "/store/shoes?page=2&color=blue"});
     assert.strictEqual((ctx as any).querystring, "page=2&color=blue");
   });
 
@@ -22,14 +22,14 @@ describe("ctx.querystring", () => {
 
 describe("ctx.querystring=", () => {
   it("should replace the querystring", () => {
-    const ctx = createContext({ url: "/store/shoes" });
+    const ctx = createContext({"url": "/store/shoes"});
     (ctx as any).querystring = "page=2&color=blue";
     assert.strictEqual((ctx as any).url, "/store/shoes?page=2&color=blue");
     assert.strictEqual((ctx as any).querystring, "page=2&color=blue");
   });
 
   it("should update ctx.search and ctx.query", () => {
-    const ctx = createContext({ url: "/store/shoes" });
+    const ctx = createContext({"url": "/store/shoes"});
     (ctx as any).querystring = "page=2&color=blue";
     assert.strictEqual((ctx as any).url, "/store/shoes?page=2&color=blue");
     assert.strictEqual((ctx as any).search, "?page=2&color=blue");
@@ -38,7 +38,7 @@ describe("ctx.querystring=", () => {
   });
 
   it("should change .url but not .originalUrl", () => {
-    const ctx = createContext({ url: "/store/shoes" });
+    const ctx = createContext({"url": "/store/shoes"});
     (ctx as any).querystring = "page=2&color=blue";
     assert.strictEqual((ctx as any).url, "/store/shoes?page=2&color=blue");
     assert.strictEqual((ctx as any).originalUrl, "/store/shoes");
@@ -46,7 +46,7 @@ describe("ctx.querystring=", () => {
   });
 
   it("should not affect parseurl", () => {
-    const ctx = createContext({ url: "/login?foo=bar" });
+    const ctx = createContext({"url": "/login?foo=bar"});
     (ctx as any).querystring = "foo=bar";
     const url = parseurl((ctx as any).req);
     assert.strictEqual(url.path, "/login?foo=bar");

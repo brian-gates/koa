@@ -2,7 +2,7 @@
 
 import assert from "node:assert/strict";
 import fs from "node:fs";
-import { describe, it } from "node:test";
+import {describe, it} from "node:test";
 import statuses from "statuses";
 import request from "supertest";
 import Koa from "../..";
@@ -109,7 +109,7 @@ describe("app.respond", () => {
       const app = new Koa();
 
       app.use(async (ctx) => {
-        ctx.body = { hello: "world" };
+        ctx.body = {"hello": "world"};
       });
 
       const res = await request(app.callback()).head("/").expect(200);
@@ -159,7 +159,7 @@ describe("app.respond", () => {
     it("should keep stream header if set manually", async () => {
       const app = new Koa();
 
-      const { size } = fs.statSync("package.json");
+      const {size} = fs.statSync("package.json");
 
       app.use(async (ctx) => {
         (ctx as any).length = size;

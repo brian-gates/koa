@@ -1,7 +1,7 @@
 "use strict";
 
 import assert from "node:assert/strict";
-import { beforeEach, describe, it } from "node:test";
+import {beforeEach, describe, it} from "node:test";
 import statuses from "statuses";
 import request from "supertest";
 import Koa from "../..";
@@ -48,8 +48,8 @@ describe("res.status=", () => {
     describe("and HTTP/2", () => {
       it("should not set the status message", () => {
         const res = createContext({
-          httpVersionMajor: 2,
-          httpVersion: "2.0",
+          "httpVersionMajor": 2,
+          "httpVersion": "2.0",
         }).response as any;
         res.status = 200;
         assert(!res.res.statusMessage);
@@ -65,12 +65,12 @@ describe("res.status=", () => {
     });
   });
 
-  function strip(status: number) {
+  function strip(status: number){
     it("should strip content related header fields", async () => {
       const app = new Koa();
 
       app.use(async (ctx: any) => {
-        ctx.body = { foo: "bar" };
+        ctx.body = {"foo": "bar"};
         ctx.set("Content-Type", "application/json; charset=utf-8");
         ctx.set("Content-Length", "15");
         ctx.set("Transfer-Encoding", "chunked");
@@ -103,7 +103,7 @@ describe("res.status=", () => {
 
       app.use(async (ctx: any) => {
         ctx.status = status;
-        ctx.body = { foo: "bar" };
+        ctx.body = {"foo": "bar"};
         ctx.set("Content-Type", "application/json; charset=utf-8");
         ctx.set("Content-Length", "15");
         ctx.set("Transfer-Encoding", "chunked");

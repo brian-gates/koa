@@ -2,10 +2,10 @@
 
 import CreateError from "http-errors";
 import assert from "node:assert/strict";
-import { once } from "node:events";
+import {once} from "node:events";
 import http from "node:http";
-import { AddressInfo } from "node:net";
-import { describe, it } from "node:test";
+import {AddressInfo} from "node:net";
+import {describe, it} from "node:test";
 import Koa from "../..";
 
 describe("app", () => {
@@ -26,7 +26,7 @@ describe("app", () => {
 
     try {
       const req = http.get({
-        port: (server.address() as AddressInfo).port,
+        "port": (server.address() as AddressInfo).port,
       });
       req.on("error", () => {});
 
@@ -48,31 +48,31 @@ describe("app", () => {
 
   it("should set env from the constructor", () => {
     const env = "custom";
-    const app = new Koa({ env });
+    const app = new Koa({env});
     assert.strictEqual(app.env, env);
   });
 
   it("should set proxy flag from the constructor", () => {
     const proxy = true;
-    const app = new Koa({ proxy });
+    const app = new Koa({proxy});
     assert.strictEqual(app.proxy, proxy);
   });
 
   it("should set signed cookie keys from the constructor", () => {
     const keys = ["customkey"];
-    const app = new Koa({ keys });
+    const app = new Koa({keys});
     assert.strictEqual(app.keys, keys);
   });
 
   it("should set subdomainOffset from the constructor", () => {
     const subdomainOffset = 3;
-    const app = new Koa({ subdomainOffset });
+    const app = new Koa({subdomainOffset});
     assert.strictEqual(app.subdomainOffset, subdomainOffset);
   });
 
   it("should set compose from the constructor", () => {
     const compose = () => (ctx: any) => {};
-    const app = new Koa({ compose });
+    const app = new Koa({compose});
     assert.strictEqual(app.compose, compose);
   });
 

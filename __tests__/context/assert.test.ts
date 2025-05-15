@@ -1,7 +1,7 @@
 "use strict";
 
 import assert from "node:assert/strict";
-import { describe, it } from "node:test";
+import {describe, it} from "node:test";
 import createContext from "../../test-helpers/context";
 
 describe("ctx.assert(value, status)", () => {

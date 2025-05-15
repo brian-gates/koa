@@ -1,8 +1,8 @@
 "use strict";
 
 import assert from "node:assert/strict";
-import { describe, it } from "node:test";
-import { request } from "../../test-helpers/context";
+import {describe, it} from "node:test";
+import {request} from "../../test-helpers/context";
 
 describe("ctx.length", () => {
   it("should return length in content-length", () => {

@@ -1,24 +1,24 @@
 "use strict";
 
 import assert from "node:assert/strict";
-import { describe, it } from "node:test";
+import {describe, it} from "node:test";
 import request from "supertest";
 import Koa from "../..";
-import { response } from "../../test-helpers/context";
+import {response} from "../../test-helpers/context";
 
 describe("res.header", () => {
   it("should return the response header object", () => {
     const res = response() as any;
     res.set("X-Foo", "bar");
     res.set("X-Number", 200);
-    assert.deepStrictEqual(res.header, { "x-foo": "bar", "x-number": 200 });
+    assert.deepStrictEqual(res.header, {"x-foo": "bar", "x-number": 200});
   });
 
   it("should use res.getHeaders() accessor when available", () => {
     const res = response() as any;
     res.res._headers = null;
-    res.res.getHeaders = () => ({ "x-foo": "baz" });
-    assert.deepStrictEqual(res.header, { "x-foo": "baz" });
+    res.res.getHeaders = () => ({"x-foo": "baz"});
+    assert.deepStrictEqual(res.header, {"x-foo": "baz"});
   });
 
   it("should return the response header object when no mocks are in use", async () => {
@@ -32,7 +32,7 @@ describe("res.header", () => {
 
     await request(app.callback()).get("/");
 
-    assert.deepStrictEqual(header, { "x-foo": "42" });
+    assert.deepStrictEqual(header, {"x-foo": "42"});
   });
 
   describe("when res._headers not present", () => {

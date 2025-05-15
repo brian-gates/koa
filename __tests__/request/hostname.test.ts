@@ -1,8 +1,8 @@
 "use strict";
 
 import assert from "node:assert/strict";
-import { describe, it } from "node:test";
-import { request } from "../../test-helpers/context";
+import {describe, it} from "node:test";
+import {request} from "../../test-helpers/context";
 
 describe("req.hostname", () => {
   it("should return hostname void of port", () => {

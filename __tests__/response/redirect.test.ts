@@ -1,7 +1,7 @@
 "use strict";
 
 import assert from "node:assert/strict";
-import { describe, it } from "node:test";
+import {describe, it} from "node:test";
 import request from "supertest";
 import Koa from "../..";
 import createContext from "../../test-helpers/context";
@@ -122,7 +122,7 @@ describe("ctx.redirect(url)", () => {
   });
 });
 
-function escape(html: string): string {
+function escape(html: string): string{
   return String(html)
     .replace(/&/g, "&amp;")
     .replace(/"/g, "&quot;")

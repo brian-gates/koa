@@ -1,9 +1,9 @@
 "use strict";
 
 import assert from "node:assert/strict";
-import { describe, it } from "node:test";
+import {describe, it} from "node:test";
 import util from "util";
-import { response } from "../../test-helpers/context";
+import {response} from "../../test-helpers/context";
 
 describe("res.inspect()", () => {
   describe("with no response.res present", () => {
@@ -21,13 +21,13 @@ describe("res.inspect()", () => {
     res.body = "hello";
 
     const expected = {
-      status: 200,
-      message: "OK",
-      header: {
+      "status": 200,
+      "message": "OK",
+      "header": {
         "content-type": "text/plain; charset=utf-8",
         "content-length": 5,
       },
-      body: "hello",
+      "body": "hello",
     };
 
     assert.deepStrictEqual(res.inspect(), expected);

@@ -1,7 +1,7 @@
 "use strict";
 
 import assert from "node:assert/strict";
-import { describe, it } from "node:test";
+import {describe, it} from "node:test";
 import createContext from "../../test-helpers/context";
 
 describe("ctx.set(name, val)", () => {
@@ -35,8 +35,8 @@ describe("ctx.set(object)", () => {
     const ctx = createContext() as any;
 
     ctx.set({
-      foo: "1",
-      bar: "2",
+      "foo": "1",
+      "bar": "2",
     });
 
     assert.strictEqual(ctx.response.header.foo, "1");

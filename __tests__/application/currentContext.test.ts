@@ -1,14 +1,14 @@
 "use strict";
 
-import { AsyncLocalStorage } from "async_hooks";
+import {AsyncLocalStorage} from "async_hooks";
 import assert from "node:assert/strict";
-import { describe, it } from "node:test";
+import {describe, it} from "node:test";
 import request from "supertest";
 import Koa from "../..";
 
 describe("app.currentContext", () => {
   it("should get currentContext return context when asyncLocalStorage enable", async () => {
-    const app = new Koa({ asyncLocalStorage: true });
+    const app = new Koa({"asyncLocalStorage": true});
 
     app.use(async (ctx) => {
       assert(ctx === app.currentContext);
@@ -56,7 +56,7 @@ describe("app.currentContext", () => {
   });
 
   it("should get currentContext return context in error handler when asyncLocalStorage enable", async () => {
-    const app = new Koa({ asyncLocalStorage: true });
+    const app = new Koa({"asyncLocalStorage": true});
 
     app.use(async () => {
       throw new Error("error message");
@@ -103,7 +103,7 @@ describe("app.currentContext", () => {
 
   it("should support a custom asyncLocalStorage", async () => {
     const asyncLocalStorage = new AsyncLocalStorage();
-    const app = new Koa({ asyncLocalStorage });
+    const app = new Koa({asyncLocalStorage});
     assert(app.currentContext === undefined);
     app.use(async (ctx) => {
       assert(ctx === app.currentContext);

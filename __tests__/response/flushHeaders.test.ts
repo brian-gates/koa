@@ -1,11 +1,11 @@
 "use strict";
 
 import http from "http";
-import { AddressInfo } from "net";
+import {AddressInfo} from "net";
 import assert from "node:assert/strict";
-import { once } from "node:events";
-import { describe, it } from "node:test";
-import { PassThrough } from "stream";
+import {once} from "node:events";
+import {describe, it} from "node:test";
+import {PassThrough} from "stream";
 import request from "supertest";
 import Koa from "../..";
 
@@ -102,7 +102,7 @@ describe("ctx.flushHeaders()", () => {
       ctx.flushHeaders();
       headersFlushed = true;
       setTimeout(() => {
-        stream.end(JSON.stringify({ message: "hello!" }));
+        stream.end(JSON.stringify({"message": "hello!"}));
       }, 10);
     });
 
@@ -111,7 +111,7 @@ describe("ctx.flushHeaders()", () => {
     const port = (server.address() as AddressInfo).port;
 
     try {
-      const req = http.request({ port });
+      const req = http.request({port});
       req.end();
 
       const [res] = await once(req, "response");

@@ -1,7 +1,7 @@
 "use strict";
 
 import assert from "node:assert/strict";
-import { describe, it } from "node:test";
+import {describe, it} from "node:test";
 import request from "supertest";
 import Koa from "../..";
 import createContext from "../../test-helpers/context";
@@ -41,7 +41,7 @@ describe("ctx.attachment([filename])", () => {
 
       app.use(async (ctx) => {
         ctx.attachment("path/to/include-no-ascii-char-中文名-ok.json");
-        ctx.body = { foo: "bar" };
+        ctx.body = {"foo": "bar"};
       });
 
       return request(app.callback())
@@ -50,7 +50,7 @@ describe("ctx.attachment([filename])", () => {
           "content-disposition",
           "attachment; filename=\"include-no-ascii-char-???-ok.json\"; filename*=UTF-8''include-no-ascii-char-%E4%B8%AD%E6%96%87%E5%90%8D-ok.json"
         )
-        .expect({ foo: "bar" })
+        .expect({"foo": "bar"})
         .expect(200);
     });
   });
@@ -62,7 +62,7 @@ describe("contentDisposition(filename, options)", () => {
     it("should require a string or Boolean", () => {
       const ctx = createContext() as any;
       assert.throws(() => {
-        ctx.attachment("plans.pdf", { fallback: 42 });
+        ctx.attachment("plans.pdf", {"fallback": 42});
       }, /fallback.*string/);
     });
 
@@ -78,7 +78,7 @@ describe("contentDisposition(filename, options)", () => {
     describe('when "false"', () => {
       it("should not generate ISO-8859-1 fallback", () => {
         const ctx = createContext() as any;
-        ctx.attachment("£ and € rates.pdf", { fallback: false });
+        ctx.attachment("£ and € rates.pdf", {"fallback": false});
         assert.strictEqual(
           ctx.response.header["content-disposition"],
           "attachment; filename*=UTF-8''%C2%A3%20and%20%E2%82%AC%20rates.pdf"
@@ -87,7 +87,7 @@ describe("contentDisposition(filename, options)", () => {
 
       it("should keep ISO-8859-1 filename", () => {
         const ctx = createContext() as any;
-        ctx.attachment("£ rates.pdf", { fallback: false });
+        ctx.attachment("£ rates.pdf", {"fallback": false});
         assert.strictEqual(
           ctx.response.header["content-disposition"],
           'attachment; filename="£ rates.pdf"'
@@ -98,7 +98,7 @@ describe("contentDisposition(filename, options)", () => {
     describe('when "true"', () => {
       it("should generate ISO-8859-1 fallback", () => {
         const ctx = createContext() as any;
-        ctx.attachment("£ and € rates.pdf", { fallback: true });
+        ctx.attachment("£ and € rates.pdf", {"fallback": true});
         assert.strictEqual(
           ctx.response.header["content-disposition"],
           "attachment; filename=\"£ and ? rates.pdf\"; filename*=UTF-8''%C2%A3%20and%20%E2%82%AC%20rates.pdf"
@@ -107,7 +107,7 @@ describe("contentDisposition(filename, options)", () => {
 
       it("should pass through ISO-8859-1 filename", () => {
         const ctx = createContext() as any;
-        ctx.attachment("£ rates.pdf", { fallback: true });
+        ctx.attachment("£ rates.pdf", {"fallback": true});
         assert.strictEqual(
           ctx.response.header["content-disposition"],
           'attachment; filename="£ rates.pdf"'
@@ -119,14 +119,14 @@ describe("contentDisposition(filename, options)", () => {
       it("should require an ISO-8859-1 string", () => {
         const ctx = createContext() as any;
         assert.throws(() => {
-          ctx.attachment("€ rates.pdf", { fallback: "€ rates.pdf" });
+          ctx.attachment("€ rates.pdf", {"fallback": "€ rates.pdf"});
         }, /fallback.*iso-8859-1/i);
       });
 
       it("should use as ISO-8859-1 fallback", () => {
         const ctx = createContext() as any;
         ctx.attachment("£ and € rates.pdf", {
-          fallback: "£ and EURO rates.pdf",
+          "fallback": "£ and EURO rates.pdf",
         });
         assert.strictEqual(
           ctx.response.header["content-disposition"],
@@ -136,7 +136,7 @@ describe("contentDisposition(filename, options)", () => {
 
       it("should use as fallback even when filename is ISO-8859-1", () => {
         const ctx = createContext() as any;
-        ctx.attachment('"£ rates".pdf', { fallback: "£ rates.pdf" });
+        ctx.attachment('"£ rates".pdf', {"fallback": "£ rates.pdf"});
         assert.strictEqual(
           ctx.response.header["content-disposition"],
           "attachment; filename=\"£ rates.pdf\"; filename*=UTF-8''%22%C2%A3%20rates%22.pdf"
@@ -145,7 +145,7 @@ describe("contentDisposition(filename, options)", () => {
 
       it("should do nothing if equal to filename", () => {
         const ctx = createContext() as any;
-        ctx.attachment("plans.pdf", { fallback: "plans.pdf" });
+        ctx.attachment("plans.pdf", {"fallback": "plans.pdf"});
         assert.strictEqual(
           ctx.response.header["content-disposition"],
           'attachment; filename="plans.pdf"'
@@ -154,7 +154,7 @@ describe("contentDisposition(filename, options)", () => {
 
       it("should use the basename of the string", () => {
         const ctx = createContext() as any;
-        ctx.attachment("€ rates.pdf", { fallback: "/path/to/EURO rates.pdf" });
+        ctx.attachment("€ rates.pdf", {"fallback": "/path/to/EURO rates.pdf"});
         assert.strictEqual(
           ctx.response.header["content-disposition"],
           "attachment; filename=\"EURO rates.pdf\"; filename*=UTF-8''%E2%82%AC%20rates.pdf"
@@ -163,7 +163,7 @@ describe("contentDisposition(filename, options)", () => {
 
       it("should do nothing without filename option", () => {
         const ctx = createContext() as any;
-        ctx.attachment(undefined, { fallback: "plans.pdf" });
+        ctx.attachment(undefined, {"fallback": "plans.pdf"});
         assert.strictEqual(
           ctx.response.header["content-disposition"],
           "attachment"
@@ -185,26 +185,26 @@ describe("contentDisposition(filename, options)", () => {
     it("should require a string", () => {
       const ctx = createContext() as any;
       assert.throws(() => {
-        ctx.attachment(undefined, { type: 42 });
+        ctx.attachment(undefined, {"type": 42});
       }, /invalid type/);
     });
 
     it("should require a valid type", () => {
       const ctx = createContext() as any;
       assert.throws(() => {
-        ctx.attachment(undefined, { type: "invlaid;type" });
+        ctx.attachment(undefined, {"type": "invlaid;type"});
       }, /invalid type/);
     });
 
     it("should create a header with inline type", () => {
       const ctx = createContext() as any;
-      ctx.attachment(undefined, { type: "inline" });
+      ctx.attachment(undefined, {"type": "inline"});
       assert.strictEqual(ctx.response.header["content-disposition"], "inline");
     });
 
     it("should create a header with inline type and filename", () => {
       const ctx = createContext() as any;
-      ctx.attachment("plans.pdf", { type: "inline" });
+      ctx.attachment("plans.pdf", {"type": "inline"});
       assert.strictEqual(
         ctx.response.header["content-disposition"],
         'inline; filename="plans.pdf"'
@@ -213,7 +213,7 @@ describe("contentDisposition(filename, options)", () => {
 
     it("should normalize type", () => {
       const ctx = createContext() as any;
-      ctx.attachment(undefined, { type: "INLINE" });
+      ctx.attachment(undefined, {"type": "INLINE"});
       assert.strictEqual(ctx.response.header["content-disposition"], "inline");
     });
   });

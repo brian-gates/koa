@@ -1,7 +1,7 @@
 "use strict";
 
 import assert from "node:assert/strict";
-import { describe, it } from "node:test";
+import {describe, it} from "node:test";
 import request from "supertest";
 import vm from "vm";
 import Koa from "../..";
@@ -60,9 +60,9 @@ describe("ctx.onerror(err)", () => {
       ctx.body = "response";
 
       throw Object.assign(new Error("boom"), {
-        status: 418,
-        expose: true,
-        headers: {
+        "status": 418,
+        "expose": true,
+        "headers": {
           "X-New-Header": "Value",
         },
       });
@@ -87,7 +87,7 @@ describe("ctx.onerror(err)", () => {
   it("should ignore error after headerSent", async () => {
     const app = new Koa();
 
-    app.on("error", (err: any, { res }: any) => {
+    app.on("error", (err: any, {res}: any) => {
       assert.strictEqual(err.message, "mock error");
       assert.strictEqual(err.headerSent, true);
       res.end();
@@ -187,8 +187,8 @@ describe("ctx.onerror(err)", () => {
 
       const app = new Koa();
       const error = Object.assign(new ExternError("boom"), {
-        status: 418,
-        expose: true,
+        "status": 418,
+        "expose": true,
       });
       app.use(async (ctx) => {
         throw error;
@@ -232,10 +232,10 @@ describe("ctx.onerror(err)", () => {
 
       ctx.app.emit = () => {};
       ctx.res = {
-        getHeaderNames: () => ["content-type", "content-length"],
-        removeHeader: () => removed++,
-        end: () => {},
-        emit: () => {},
+        "getHeaderNames": () => ["content-type", "content-length"],
+        "removeHeader": () => removed++,
+        "end": () => {},
+        "emit": () => {},
       };
 
       ctx.onerror(new Error("error"));
@@ -254,7 +254,7 @@ describe("ctx.onerror(err)", () => {
       });
 
       app.use(async (ctx) => {
-        throw { key: "value" }; // eslint-disable-line no-throw-literal
+        throw {"key": "value"}; // eslint-disable-line no-throw-literal
       });
 
       await request(app.callback())

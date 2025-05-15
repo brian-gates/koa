@@ -1,9 +1,9 @@
 "use strict";
 
-import { once } from "events";
+import {once} from "events";
 import net from "net";
 import assert from "node:assert/strict";
-import { describe, it } from "node:test";
+import {describe, it} from "node:test";
 import Koa from "../../";
 
 describe("res.writable", () => {

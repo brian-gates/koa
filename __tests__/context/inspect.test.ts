@@ -1,7 +1,7 @@
 "use strict";
 
 import assert from "node:assert/strict";
-import { describe, it } from "node:test";
+import {describe, it} from "node:test";
 import util from "util";
 import prototype from "../../lib/context";
 import createContext from "../../test-helpers/context";

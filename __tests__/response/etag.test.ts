@@ -1,8 +1,8 @@
 "use strict";
 
 import assert from "node:assert/strict";
-import { describe, it } from "node:test";
-import { response } from "../../test-helpers/context";
+import {describe, it} from "node:test";
+import {response} from "../../test-helpers/context";
 
 describe("res.etag=", () => {
   it("should not modify an etag with quotes", () => {
