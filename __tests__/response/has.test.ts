@@ -1,0 +1,21 @@
+"use strict";
+
+import assert from "node:assert/strict";
+import { describe, it } from "node:test";
+import createContext from "../../test-helpers/context";
+
+describe("ctx.response.has(name)", () => {
+  it("should check a field value, case insensitive way", () => {
+    const ctx = createContext() as any;
+    ctx.set("X-Foo", "");
+    assert.ok(ctx.response.has("x-Foo"));
+    assert.ok(ctx.has("x-foo"));
+  });
+
+  it("should return false for non-existent header", () => {
+    const ctx = createContext() as any;
+    assert.strictEqual(ctx.response.has("boo"), false);
+    ctx.set("x-foo", 5);
+    assert.strictEqual(ctx.has("x-boo"), false);
+  });
+});

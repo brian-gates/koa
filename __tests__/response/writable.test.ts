@@ -11,7 +11,7 @@ describe("res.writable", () => {
     it("should always be writable and respond to all requests", async () => {
       const app = new Koa();
       let count = 0;
-      app.use((ctx) => {
+      app.use(async (ctx) => {
         count++;
         ctx.body = "request " + count + ", writable: " + ctx.writable;
       });
@@ -54,7 +54,7 @@ describe("res.writable", () => {
       let assertionRan = false;
       app.on("error", () => {});
 
-      app.use((c) => {
+      app.use(async (c) => {
         ctx = c;
         assertionRan = true;
       });
@@ -87,7 +87,7 @@ describe("res.writable", () => {
       const app = new Koa();
       let assertionRan = false;
 
-      app.use((ctx) => {
+      app.use(async (ctx) => {
         ctx.res.end();
         assert(!ctx.writable);
         assertionRan = true;
