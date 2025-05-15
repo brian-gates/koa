@@ -1,12 +1,3 @@
-"use strict";
-
-// Register module aliases
-import "./register";
-
-/**
- * Module dependencies.
- */
-
 import { AsyncLocalStorage } from "async_hooks";
 import debugModule from "debug";
 import { EventEmitter } from "events";

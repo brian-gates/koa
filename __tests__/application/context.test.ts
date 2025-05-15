@@ -7,11 +7,13 @@ import Koa from "../..";
 
 describe("app.context", () => {
   const app1 = new Koa();
-  (app1.context as any).msg = "hello";
+  // Add property to context for testing
+  app1.context.msg = "hello";
   const app2 = new Koa();
 
   it("should merge properties", () => {
     app1.use(async (ctx) => {
+      // Simple type assertion directly where needed
       assert.strictEqual((ctx as any).msg, "hello");
       ctx.status = 204;
     });
@@ -21,6 +23,7 @@ describe("app.context", () => {
 
   it("should not affect the original prototype", () => {
     app2.use(async (ctx) => {
+      // Simple type assertion directly where needed
       assert.strictEqual((ctx as any).msg, undefined);
       ctx.status = 204;
     });
