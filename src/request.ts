@@ -20,7 +20,7 @@ const IP = Symbol("context#ip");
 /**
  * Request class with all properties and methods
  */
-class Request {
+export class Request {
   req: IncomingMessage;
   app: {
     proxy: boolean;
@@ -570,5 +570,3 @@ if (util.inspect.custom) {
     },
   });
 }
-
-export default Request;

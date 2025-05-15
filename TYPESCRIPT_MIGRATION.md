@@ -88,7 +88,7 @@ When migrating test files, we follow these patterns:
    // After
    import { describe, it } from "node:test";
    import assert from "node:assert/strict";
-   import createContext from "../../test-helpers/context";
+   import { createContext } from "../../test-helpers/context";
    ```
 
 2. **Type assertions for context and request objects**:
@@ -159,12 +159,21 @@ import path from "path";
 import * as util from "util";
 import escapeHtml from "escape-html";
 import onFinished from "on-finished";
-import only from "./only";
+import { only } from "./only";
 
-export default MyClass;
+export class MyClass {
+  // implementation
+}
 // OR
-export { method1, method2 };
+export function method1() {
+  // implementation
+}
+export function method2() {
+  // implementation
+}
 ```
+
+> **Important**: Prefer named exports over default exports. This improves refactoring capabilities, static analysis, and consistency across the codebase.
 
 ### 2. Class Definitions
 
@@ -189,8 +198,10 @@ module.exports = Application;
 
 ```typescript
 import { Middleware } from "./types";
+import { EventEmitter } from "events";
+import { Server } from "http";
 
-class Application extends EventEmitter {
+export class Application extends EventEmitter {
   proxy: boolean;
   middleware: Middleware[];
   env: string;
@@ -206,8 +217,6 @@ class Application extends EventEmitter {
     // implementation
   }
 }
-
-export default Application;
 ```
 
 ### 3. Function Signatures
@@ -229,7 +238,7 @@ function only(obj, keys) {
 **TypeScript (After - with inference):**
 
 ```typescript
-function only(obj: { [key: string]: any }, keys: string[]) {
+export function only(obj: { [key: string]: any }, keys: string[]) {
   const ret = {} as { [key: string]: any };
   for (let i = 0; i < keys.length; i++) {
     const key = keys[i];
@@ -238,8 +247,6 @@ function only(obj: { [key: string]: any }, keys: string[]) {
   }
   return ret;
 }
-
-export default only;
 ```
 
 ### 4. Working with `this` Context
@@ -294,7 +301,7 @@ describe("app", () => {
 ```typescript
 import assert from "assert";
 import { describe, it } from "node:test";
-import Koa from "../src/application";
+import { Application } from "../src/application";
 
 describe("app", () => {
   it("should handle socket errors", (done) => {
@@ -328,6 +335,25 @@ export type Middleware<StateT = any, ContextT = Context> = (
   next: Next,
 ) => any;
 ```
+
+### Interface and Type Imports
+
+Import interfaces and types from their source files rather than redefining them:
+
+```typescript
+// AVOID - redefining interfaces
+// in application.ts
+export interface Request {
+  // properties...
+}
+
+// PREFER - importing from source
+// in application.ts
+import { Request } from "./request";
+import { Response } from "./response";
+```
+
+This ensures that type definitions have a single source of truth and reduces duplicate code.
 
 ### Utility Functions
 

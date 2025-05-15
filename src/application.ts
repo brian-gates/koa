@@ -10,7 +10,7 @@ import * as util from "util";
 import context from "./context";
 import { isStream } from "./is-stream";
 import only from "./only";
-import request from "./request";
+import { Request } from "./request";
 import response from "./response";
 
 const debug = debugModule("koa:application");
