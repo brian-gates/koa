@@ -19,25 +19,11 @@ This document outlines the step-by-step process for converting JavaScript files 
   - Plus associated type definitions and tests
 
 - Test files:
-  - `__tests__/request/whatwg-url.test.ts`
-  - `__tests__/request/href.test.ts`
-  - `__tests__/request/querystring.test.ts`
-  - `__tests__/request/search.test.ts`
-  - `__tests__/request/secure.test.ts`
-  - `__tests__/request/type.test.ts`
-  - `__tests__/request/stale.test.ts`
-  - `__tests__/request/subdomains.test.ts`
-  - `__tests__/request/header.test.ts`
-  - `__tests__/request/headers.test.ts`
-  - `__tests__/request/length.test.ts`
-  - `__tests__/request/get.test.ts`
-  - `__tests__/request/idempotent.test.ts`
-  - `__tests__/request/origin.test.ts`
+  - All files in `__tests__/request/` directory (30 files total)
 
 ### In Progress
 
 - Converting remaining test files:
-  - `__tests__/request/` - 16 remaining files
   - `__tests__/response/` - All files
   - `__tests__/context/` - All files
   - `__tests__/application/` - All files
