@@ -15,7 +15,7 @@ import { is as typeis } from "type-is";
 import * as util from "util";
 import vary from "vary";
 import { isStream } from "./is-stream";
-import only from "./only";
+import { only } from "./only";
 
 /**
  * Prototype.

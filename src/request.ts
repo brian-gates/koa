@@ -13,7 +13,7 @@ import { parse as parseSearchParams } from "./search-params";
 import fresh from "fresh";
 import typeis from "type-is";
 import * as util from "util";
-import only from "./only";
+import { only } from "./only";
 
 const IP = Symbol("context#ip");
 
@@ -570,3 +570,5 @@ if (util.inspect.custom) {
     },
   });
 }
+
+export default Request;
