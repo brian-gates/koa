@@ -64,12 +64,12 @@ describe("app.use(fn)", () => {
   });
 
   // https://github.com/koajs/koa/pull/530#issuecomment-148138051
-  it("should catch thrown errors in non-async functions", () => {
+  it("should catch thrown errors in non-async functions", async () => {
     const app = new Koa();
 
     app.use((ctx) => ctx.throw(404, "Not Found"));
 
-    return request(app.callback()).get("/").expect(404);
+    await request(app.callback()).get("/").expect(404);
   });
 
   it("should throw error for non-function", () => {

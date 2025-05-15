@@ -4,13 +4,13 @@ import request from "supertest";
 import Koa from "../..";
 
 describe("ctx.state", () => {
-  it("should provide a ctx.state namespace", () => {
+  it("should provide a ctx.state namespace", async () => {
     const app = new Koa();
 
     app.use(async (ctx) => {
       assert.deepStrictEqual(ctx.state, {});
     });
 
-    return request(app.callback()).get("/").expect(404);
+    await request(app.callback()).get("/").expect(404);
   });
 });

@@ -6,7 +6,7 @@ import Koa from "../..";
 import createContext from "../../test-helpers/context";
 
 describe("ctx.onerror(err)", () => {
-  it("should respond", () => {
+  it("should respond", async () => {
     const app = new Koa();
 
     app.use(async (ctx) => {
@@ -15,7 +15,7 @@ describe("ctx.onerror(err)", () => {
       ctx.throw(418, "boom");
     });
 
-    return request(app.callback())
+    await request(app.callback())
       .get("/")
       .expect(418)
       .expect("Content-Type", "text/plain; charset=utf-8")
@@ -102,7 +102,7 @@ describe("ctx.onerror(err)", () => {
     await request(app.callback()).get("/").expect("X-Foo", "Bar").expect(200);
   });
 
-  it("should set status specified in the error using statusCode", () => {
+  it("should set status specified in the error using statusCode", async () => {
     const app = new Koa();
 
     app.use(async (ctx) => {
@@ -112,7 +112,7 @@ describe("ctx.onerror(err)", () => {
       throw err;
     });
 
-    return request(app.callback())
+    await request(app.callback())
       .get("/")
       .expect(404)
       .expect("Content-Type", "text/plain; charset=utf-8")
@@ -121,7 +121,7 @@ describe("ctx.onerror(err)", () => {
 
   describe("when invalid err.statusCode", () => {
     describe("not number", () => {
-      it("should respond 500", () => {
+      it("should respond 500", async () => {
         const app = new Koa();
 
         app.use(async (ctx) => {
@@ -131,7 +131,7 @@ describe("ctx.onerror(err)", () => {
           throw err;
         });
 
-        return request(app.callback())
+        await request(app.callback())
           .get("/")
           .expect(500)
           .expect("Content-Type", "text/plain; charset=utf-8")
@@ -142,7 +142,7 @@ describe("ctx.onerror(err)", () => {
 
   describe("when invalid err.status", () => {
     describe("not number", () => {
-      it("should respond 500", () => {
+      it("should respond 500", async () => {
         const app = new Koa();
 
         app.use(async (ctx) => {
@@ -152,7 +152,7 @@ describe("ctx.onerror(err)", () => {
           throw err;
         });
 
-        return request(app.callback())
+        await request(app.callback())
           .get("/")
           .expect(500)
           .expect("Content-Type", "text/plain; charset=utf-8")
@@ -160,7 +160,7 @@ describe("ctx.onerror(err)", () => {
       });
     });
     describe("not http status code", () => {
-      it("should respond 500", () => {
+      it("should respond 500", async () => {
         const app = new Koa();
 
         app.use(async (ctx) => {
@@ -170,7 +170,7 @@ describe("ctx.onerror(err)", () => {
           throw err;
         });
 
-        return request(app.callback())
+        await request(app.callback())
           .get("/")
           .expect(500)
           .expect("Content-Type", "text/plain; charset=utf-8")
@@ -210,14 +210,14 @@ describe("ctx.onerror(err)", () => {
   });
 
   describe("when non-error thrown", () => {
-    it("should respond with non-error thrown message", () => {
+    it("should respond with non-error thrown message", async () => {
       const app = new Koa();
 
       app.use(async (ctx) => {
         throw "string error"; // eslint-disable-line no-throw-literal
       });
 
-      return request(app.callback())
+      await request(app.callback())
         .get("/")
         .expect(500)
         .expect("Content-Type", "text/plain; charset=utf-8")

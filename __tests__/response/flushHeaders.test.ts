@@ -8,7 +8,7 @@ import request from "supertest";
 import Koa from "../..";
 
 describe("ctx.flushHeaders()", () => {
-  it("should set headersSent", () => {
+  it("should set headersSent", async () => {
     const app = new Koa();
 
     app.use(async (ctx) => {
@@ -19,10 +19,10 @@ describe("ctx.flushHeaders()", () => {
       assert.strictEqual(ctx.res.headersSent, true);
     });
 
-    return request(app.callback()).get("/").expect(200).expect("Body");
+    await request(app.callback()).get("/").expect(200).expect("Body");
   });
 
-  it("should allow a response afterwards", () => {
+  it("should allow a response afterwards", async () => {
     const app = new Koa();
 
     app.use(async (ctx) => {
@@ -32,14 +32,14 @@ describe("ctx.flushHeaders()", () => {
       ctx.body = "Body";
     });
 
-    return request(app.callback())
+    await request(app.callback())
       .get("/")
       .expect(200)
       .expect("Content-Type", "text/plain")
       .expect("Body");
   });
 
-  it("should send the correct status code", () => {
+  it("should send the correct status code", async () => {
     const app = new Koa();
 
     app.use(async (ctx) => {
@@ -49,7 +49,7 @@ describe("ctx.flushHeaders()", () => {
       ctx.body = "Body";
     });
 
-    return request(app.callback())
+    await request(app.callback())
       .get("/")
       .expect(401)
       .expect("Content-Type", "text/plain")

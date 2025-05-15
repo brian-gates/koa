@@ -22,6 +22,43 @@ export interface Request {
   ctx: Context;
   response: Response;
   originalUrl?: string;
+
+  // Properties
+  header: Record<string, string | string[]>;
+  headers: Record<string, string | string[]>;
+  url: string;
+  origin: string | undefined;
+  href: string;
+  method: string;
+  path: string;
+  query: Record<string, any>;
+  querystring: string;
+  search: string;
+  host: string;
+  hostname: string;
+  URL: URL | Record<string, any>;
+  fresh: boolean;
+  stale: boolean;
+  idempotent: boolean;
+  socket: any;
+  charset: string;
+  length: number | undefined;
+  protocol: string;
+  secure: boolean;
+  ips: string[];
+  ip: string;
+  subdomains: string[];
+  accept: any;
+  type: string;
+
+  // Methods
+  accepts(...args: string[]): string | string[] | false;
+  acceptsEncodings(...args: string[]): string | string[] | false;
+  acceptsCharsets(...args: string[]): string | string[] | false;
+  acceptsLanguages(...args: string[]): string | string[] | false;
+  is(type: string, ...types: string[]): string | false | null;
+  get(field: string): string;
+  toJSON(): any;
 }
 
 export interface Response {
@@ -31,9 +68,28 @@ export interface Response {
   ctx: Context;
   request: Request;
   _explicitNullBody?: boolean;
-  has(field: string): boolean;
+
+  // Methods
+  attachment(filename?: string, options?: any): void;
+  redirect(url: string, alt?: string): void;
   remove(field: string): void;
+  vary(field: string): void;
+  has(field: string): boolean;
+  set(field: string, val: string | string[]): void;
+  set(fields: Record<string, string | string[]>): void;
+  append(field: string, val: string | string[]): void;
+  flushHeaders(): void;
+
+  // Properties
+  status: number;
+  message: string;
+  body: any;
   length?: number;
+  type: string | null;
+  lastModified: Date | string;
+  etag: string;
+  headerSent: boolean;
+  writable: boolean;
 }
 
 // Base interface with minimal required properties
@@ -89,6 +145,7 @@ class Application extends EventEmitter {
     proxyIpHeader?: string;
     maxIpsCount?: number;
     compose?: Function;
+    msg?: string;
     asyncLocalStorage?: boolean | AsyncLocalStorage<unknown>;
   }) {
     super();
@@ -216,10 +273,67 @@ class Application extends EventEmitter {
       response: KoaResponseType;
       originalUrl?: string;
 
+      // Properties
+      header: Record<string, string | string[]> = {};
+      headers: Record<string, string | string[]> = {};
+      url: string = "";
+      origin: string | undefined;
+      href: string = "";
+      method: string = "GET";
+      path: string = "";
+      query: Record<string, any> = {};
+      querystring: string = "";
+      search: string = "";
+      host: string = "";
+      hostname: string = "";
+      URL: URL | Record<string, any> = {};
+      fresh: boolean = false;
+      stale: boolean = true;
+      idempotent: boolean = true;
+      socket: any = null;
+      charset: string = "";
+      length: number | undefined;
+      protocol: string = "http";
+      secure: boolean = false;
+      ips: string[] = [];
+      ip: string = "";
+      subdomains: string[] = [];
+      accept: any = null;
+      type: string = "";
+
       constructor(appInstance: Application) {
         this.app = appInstance;
         // Copy all properties from the prototype
         Object.setPrototypeOf(this, appInstance.request);
+      }
+
+      // Methods
+      accepts(...args: string[]): string | string[] | false {
+        return false;
+      }
+
+      acceptsEncodings(...args: string[]): string | string[] | false {
+        return false;
+      }
+
+      acceptsCharsets(...args: string[]): string | string[] | false {
+        return false;
+      }
+
+      acceptsLanguages(...args: string[]): string | string[] | false {
+        return false;
+      }
+
+      is(type: string, ...types: string[]): string | false | null {
+        return false;
+      }
+
+      get(field: string): string {
+        return "";
+      }
+
+      toJSON(): any {
+        return {};
       }
     }
 
@@ -231,6 +345,14 @@ class Application extends EventEmitter {
       request: KoaRequest;
       _explicitNullBody?: boolean;
       length?: number;
+      status: number = 404;
+      message: string = "";
+      body: any = null;
+      type: string | null = null;
+      lastModified: Date | string = new Date();
+      etag: string = "";
+      headerSent: boolean = false;
+      writable: boolean = true;
 
       constructor(appInstance: Application) {
         this.app = appInstance;
@@ -238,14 +360,19 @@ class Application extends EventEmitter {
         Object.setPrototypeOf(this, appInstance.response);
       }
 
+      // Methods - these will be overridden by the prototype
+      attachment(filename?: string, options?: any): void {}
+      redirect(url: string, alt?: string): void {}
+      vary(field: string): void {}
       has(field: string): boolean {
-        // This will be overridden by the prototype
         return false;
       }
-
-      remove(field: string): void {
-        // This will be overridden by the prototype
-      }
+      set(field: string, val?: string | string[]): void;
+      set(fields: Record<string, string | string[]>): void;
+      set(field: any, val?: any): void {}
+      append(field: string, val: string | string[]): void {}
+      flushHeaders(): void {}
+      remove(field: string): void {}
     }
 
     class KoaContext implements Context {
@@ -263,8 +390,8 @@ class Application extends EventEmitter {
       body?: string | Buffer | object | null | NodeJS.ReadableStream;
       length?: number;
       type?: string;
-      writable: boolean = true;
-      headerSent: boolean = false;
+      writable?: boolean;
+      headerSent?: boolean;
 
       constructor(appInstance: Application) {
         this.app = appInstance;

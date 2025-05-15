@@ -85,7 +85,7 @@ describe("app", () => {
     assert.deepStrictEqual((Koa as any).HttpError, CreateError.HttpError);
     assert.throws(
       () => {
-        throw new CreateError(500, "test error");
+        throw CreateError(500, "test error");
       },
       (Koa as any).HttpError,
     );

@@ -7,12 +7,12 @@ import Koa from "../..";
 
 describe("app.respond", () => {
   describe("when ctx.respond === false", () => {
-    it("should function (ctx)", () => {
+    it("should function (ctx)", async () => {
       const app = new Koa();
 
       app.use(async (ctx) => {
         ctx.body = "Hello";
-        (ctx as any).respond = false;
+        ctx.respond = false;
 
         const res = ctx.res;
         res.statusCode = 200;
@@ -23,24 +23,24 @@ describe("app.respond", () => {
         });
       });
 
-      return request(app.callback()).get("/").expect(200).expect("lol");
+      await request(app.callback()).get("/").expect(200).expect("lol");
     });
 
-    it("should ignore set header after header sent", () => {
+    it("should ignore set header after header sent", async () => {
       const app = new Koa();
       app.use(async (ctx) => {
         ctx.body = "Hello";
-        (ctx as any).respond = false;
+        ctx.respond = false;
 
         const res = ctx.res;
         res.statusCode = 200;
         res.setHeader("Content-Type", "text/plain");
         res.setHeader("Content-Length", "3");
         res.end("lol");
-        (ctx as any).set("foo", "bar");
+        ctx.response.set("foo", "bar");
       });
 
-      return request(app.callback())
+      await request(app.callback())
         .get("/")
         .expect(200)
         .expect("lol")
@@ -49,11 +49,11 @@ describe("app.respond", () => {
         });
     });
 
-    it("should ignore set status after header sent", () => {
+    it("should ignore set status after header sent", async () => {
       const app = new Koa();
       app.use(async (ctx) => {
         ctx.body = "Hello";
-        (ctx as any).respond = false;
+        ctx.respond = false;
 
         const res = ctx.res;
         res.statusCode = 200;
@@ -63,7 +63,7 @@ describe("app.respond", () => {
         ctx.status = 201;
       });
 
-      return request(app.callback()).get("/").expect(200).expect("lol");
+      await request(app.callback()).get("/").expect(200).expect("lol");
     });
   });
 
@@ -73,7 +73,7 @@ describe("app.respond", () => {
 
       app.use(async (ctx) => {
         ctx.body = "";
-        (ctx as any).type = null;
+        ctx.response.type = null;
       });
 
       const res = await request(app.callback()).get("/").expect(200);
@@ -160,7 +160,7 @@ describe("app.respond", () => {
       const { size } = fs.statSync("package.json");
 
       app.use(async (ctx) => {
-        (ctx as any).length = size;
+        ctx.response.length = size;
         ctx.body = fs.createReadStream("package.json");
       });
 
@@ -170,35 +170,35 @@ describe("app.respond", () => {
       assert(!res.text);
     });
 
-    it("should respond with a 404 if no body was set", () => {
+    it("should respond with a 404 if no body was set", async () => {
       const app = new Koa();
 
       app.use(async () => {
         // No body set
       });
 
-      return request(app.callback()).head("/").expect(404);
+      await request(app.callback()).head("/").expect(404);
     });
 
-    it("should respond with a 200 if body = ''", () => {
+    it("should respond with a 200 if body = ''", async () => {
       const app = new Koa();
 
       app.use(async (ctx) => {
         ctx.body = "";
       });
 
-      return request(app.callback()).head("/").expect(200);
+      await request(app.callback()).head("/").expect(200);
     });
 
-    it("should not overwrite the content-type", () => {
+    it("should not overwrite the content-type", async () => {
       const app = new Koa();
 
       app.use(async (ctx) => {
         ctx.status = 200;
-        (ctx as any).type = "application/javascript";
+        ctx.type = "application/javascript";
       });
 
-      return request(app.callback())
+      await request(app.callback())
         .head("/")
         .expect("content-type", /application\/javascript/)
         .expect(200);
@@ -206,18 +206,18 @@ describe("app.respond", () => {
   });
 
   describe("when no middleware is present", () => {
-    it("should 404", () => {
+    it("should 404", async () => {
       const app = new Koa();
 
-      return request(app.callback()).get("/").expect(404);
+      await request(app.callback()).get("/").expect(404);
     });
   });
 
   describe("when res has already been written to", () => {
-    it("should not cause an app error", () => {
+    it("should not cause an app error", async () => {
       const app = new Koa();
 
-      app.use(async (ctx, next) => {
+      app.use(async (ctx) => {
         const res = ctx.res;
         ctx.status = 200;
         res.setHeader("Content-Type", "text/html");
@@ -228,13 +228,13 @@ describe("app.respond", () => {
         throw err;
       });
 
-      return request(app.callback()).get("/").expect(200);
+      await request(app.callback()).get("/").expect(200);
     });
 
-    it("should send the right body", () => {
+    it("should send the right body", async () => {
       const app = new Koa();
 
-      app.use(async (ctx, next) => {
+      app.use(async (ctx) => {
         const res = ctx.res;
         ctx.status = 200;
         res.setHeader("Content-Type", "text/html");
@@ -247,23 +247,20 @@ describe("app.respond", () => {
         });
       });
 
-      return request(app.callback())
-        .get("/")
-        .expect(200)
-        .expect("HelloGoodbye");
+      await request(app.callback()).get("/").expect(200).expect("HelloGoodbye");
     });
   });
 
   describe("when .body is missing", () => {
     describe("with status=400", () => {
-      it("should respond with the associated status message", () => {
+      it("should respond with the associated status message", async () => {
         const app = new Koa();
 
         app.use(async (ctx) => {
           ctx.status = 400;
         });
 
-        return request(app.callback())
+        await request(app.callback())
           .get("/")
           .expect(400)
           .expect("Content-Length", "11")
@@ -345,7 +342,7 @@ describe("app.respond", () => {
           .expect(700)
           .expect("custom status");
 
-        assert.strictEqual(res.res.statusMessage, "custom status");
+        assert.strictEqual((res as any).res.statusMessage, "custom status");
       });
     });
 
@@ -363,19 +360,19 @@ describe("app.respond", () => {
           .expect(200)
           .expect("ok");
 
-        assert.strictEqual(res.res.statusMessage, "ok");
+        assert.strictEqual((res as any).res.statusMessage, "ok");
       });
     });
 
     describe("with custom status without message", () => {
-      it("should respond with the status code number", () => {
+      it("should respond with the status code number", async () => {
         const app = new Koa();
 
         app.use(async (ctx) => {
           ctx.res.statusCode = 701;
         });
 
-        return request(app.callback()).get("/").expect(701).expect("701");
+        await request(app.callback()).get("/").expect(701).expect("701");
       });
     });
   });

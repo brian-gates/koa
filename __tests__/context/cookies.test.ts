@@ -23,7 +23,7 @@ describe("ctx.cookies", () => {
 
     describe("with .signed", () => {
       describe("when no .keys are set", () => {
-        it("should error", () => {
+        it("should error", async () => {
           const app = new Koa();
 
           app.use(async (ctx) => {
@@ -34,7 +34,7 @@ describe("ctx.cookies", () => {
             }
           });
 
-          return request(app.callback())
+          await request(app.callback())
             .get("/")
             .expect(".keys required for signed cookies");
         });

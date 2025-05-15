@@ -6,7 +6,7 @@ import createContext from "../../test-helpers/context";
 
 describe("ctx.attachment([filename])", () => {
   describe("when given a filename", () => {
-    it("should set the filename param", () => {
+    it("should set the filename param", async () => {
       const ctx = createContext() as any;
       ctx.attachment("path/to/tobi.png");
       const str = 'attachment; filename="tobi.png"';
@@ -42,7 +42,7 @@ describe("ctx.attachment([filename])", () => {
         ctx.body = { foo: "bar" };
       });
 
-      return request(app.callback())
+      await request(app.callback())
         .get("/")
         .expect(
           "content-disposition",

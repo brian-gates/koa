@@ -138,7 +138,8 @@ export class Request {
   get query() {
     const str = this.querystring;
     const c = (this._querycache = this._querycache || {});
-    return c[str] || (c[str] = parseSearchParams(str));
+    const cacheKey = str as string;
+    return c[cacheKey] || (c[cacheKey] = parseSearchParams(str as string));
   }
 
   /**
@@ -153,13 +154,13 @@ export class Request {
    */
   get querystring() {
     if (!this.req) return "";
-    return parse(this.req).query || "";
+    return (parse(this.req).query as string) || "";
   }
 
   /**
    * Set query string.
    */
-  set querystring(str) {
+  set querystring(str: string) {
     const url = parse(this.req);
     if (url.search === `?${str}`) return;
 
@@ -181,7 +182,7 @@ export class Request {
    * Set the search string. Same as
    * request.querystring= but included for ubiquity.
    */
-  set search(str) {
+  set search(str: string) {
     this.querystring = str;
   }
 
