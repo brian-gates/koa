@@ -1,4 +1,3 @@
-"use strict";
 
 import {once} from "events";
 import net from "net";

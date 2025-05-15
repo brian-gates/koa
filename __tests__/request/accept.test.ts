@@ -1,4 +1,3 @@
-"use strict";
 
 import Accept from "accepts";
 import assert from "node:assert/strict";

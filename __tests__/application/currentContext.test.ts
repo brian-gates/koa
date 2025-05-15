@@ -1,4 +1,3 @@
-"use strict";
 
 import {AsyncLocalStorage} from "async_hooks";
 import assert from "node:assert/strict";

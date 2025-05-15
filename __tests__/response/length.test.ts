@@ -1,4 +1,3 @@
-"use strict";
 
 import fs from "fs";
 import assert from "node:assert/strict";

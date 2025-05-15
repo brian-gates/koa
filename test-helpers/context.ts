@@ -1,4 +1,3 @@
-"use strict";
 
 import { Duplex, Readable, Writable } from "stream";
 import Application from "../src/application";

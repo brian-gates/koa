@@ -1,4 +1,3 @@
-"use strict";
 
 import CreateError from "http-errors";
 import assert from "node:assert/strict";
