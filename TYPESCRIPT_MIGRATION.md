@@ -28,11 +28,14 @@ This document outlines the step-by-step process for converting JavaScript files 
   - `__tests__/request/stale.test.ts`
   - `__tests__/request/subdomains.test.ts`
   - `__tests__/request/header.test.ts`
+  - `__tests__/request/headers.test.ts`
+  - `__tests__/request/length.test.ts`
+  - `__tests__/request/get.test.ts`
 
 ### In Progress
 
 - Converting remaining test files:
-  - `__tests__/request/` - 21 remaining files
+  - `__tests__/request/` - 18 remaining files
   - `__tests__/response/` - All files
   - `__tests__/context/` - All files
   - `__tests__/application/` - All files
