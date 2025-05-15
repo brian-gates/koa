@@ -37,7 +37,10 @@ During the migration, TypeScript test files need to be run with ts-node:
 npx ts-node __tests__/path/to/test.ts
 
 # Run all TypeScript test files in a directory
-find __tests__/path/to/dir -name "*.test.ts" | xargs npx ts-node
+find __tests__/path/to/dir -name "*.test.ts" | xargs -L 1 npx ts-node
+
+# Run a specific test with filtering
+npx ts-node __tests__/path/to/test.ts --test-name="specific test name"
 ```
 
 Note that TypeScript test files cannot be run directly with `node --test` until they are compiled to JavaScript.
@@ -52,7 +55,10 @@ Note that TypeScript test files cannot be run directly with `node --test` until 
      ```bash
      git mv lib/some-file.js src/some-file.ts
      ```
-   - For tests, either keep tests in JavaScript or create TypeScript versions in the same directory using `git mv __tests__/path/test.js __tests__/path/test.ts`
+   - For tests, rename test files using `git mv` to preserve history:
+     ```bash
+     git mv __tests__/path/test.js __tests__/path/test.ts
+     ```
 
 2. **Code Conversion Steps**
 
@@ -60,10 +66,68 @@ Note that TypeScript test files cannot be run directly with `node --test` until 
    - Replace `module.exports` with `export default` or named exports
    - Add type definitions for functions, parameters, and return values
    - Use TypeScript interfaces/types for complex objects
+   - For test files, use `as any` type assertions where appropriate to handle untyped properties
 
 3. **Testing**
    - Use `.test.ts` extension for TypeScript tests
-   - Run TypeScript tests with `npm run test:ts`
+   - Run TypeScript tests with `npx ts-node`
+   - Add tests to CI pipeline once all tests are migrated
+
+## Test File Migration Patterns
+
+When migrating test files, we follow these patterns:
+
+1. **Import statements**:
+
+   ```typescript
+   // Before
+   const { describe, it } = require("node:test");
+   const assert = require("node:assert/strict");
+   const context = require("../../test-helpers/context");
+
+   // After
+   import { describe, it } from "node:test";
+   import assert from "node:assert/strict";
+   import createContext from "../../test-helpers/context";
+   ```
+
+2. **Type assertions for context and request objects**:
+
+   ```typescript
+   // Add type assertions to avoid strictness errors
+   const ctx = createContext() as any;
+   const req = request() as any;
+   ```
+
+3. **String literals**:
+
+   ```typescript
+   // Before
+   describe('with no content-type present', () => {
+     it('should return ""', () => {
+
+   // After
+   describe("with no content-type present", () => {
+     it("should return \"\"", () => {
+   ```
+
+4. **Array literals**:
+
+   ```typescript
+   // Before
+   assert.deepStrictEqual(ctx.accepts(), [
+     "text/html",
+     "text/plain",
+     "image/jpeg",
+   ]);
+
+   // After
+   assert.deepStrictEqual(ctx.accepts(), [
+     "text/html",
+     "text/plain",
+     "image/jpeg",
+   ]);
+   ```
 
 ## Detailed Conversion Guide
 
@@ -308,6 +372,20 @@ When dealing with third-party libraries:
 1. Check for `@types/package-name` if available
 2. Create custom declaration files if needed
 3. Use `any` temporarily but add TODO comments for future improvement
+
+### Test File Typing
+
+When migrating test files:
+
+1. Use `as any` for context/request objects to avoid excessive typing
+2. For complex assertions, consider helper functions with proper typing
+3. When dealing with Koa objects with dynamic properties, use index signatures:
+   ```typescript
+   interface KoaRequest {
+     [key: string]: any;
+     headers: Record<string, string | string[] | undefined>;
+   }
+   ```
 
 ## Best Practices
 
