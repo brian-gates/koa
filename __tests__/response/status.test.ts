@@ -1,11 +1,11 @@
 "use strict";
 
-import { describe, it, beforeEach } from "node:test";
-import createContext from "../../test-helpers/context";
-import request from "supertest";
-import statuses from "statuses";
 import assert from "node:assert/strict";
+import { beforeEach, describe, it } from "node:test";
+import statuses from "statuses";
+import request from "supertest";
 import Koa from "../..";
+import createContext from "../../test-helpers/context";
 
 describe("res.status=", () => {
   describe("when a status code", () => {
@@ -69,7 +69,7 @@ describe("res.status=", () => {
     it("should strip content related header fields", async () => {
       const app = new Koa();
 
-      app.use((ctx) => {
+      app.use(async (ctx: any) => {
         ctx.body = { foo: "bar" };
         ctx.set("Content-Type", "application/json; charset=utf-8");
         ctx.set("Content-Length", "15");
@@ -80,8 +80,9 @@ describe("res.status=", () => {
         assert(ctx.response.header["transfer-encoding"] == null);
       });
 
-      const res = await request(app.callback()).get("/").expect(status);
+      const res = await request(app.callback()).get("/");
 
+      assert.strictEqual(res.status, status);
       assert.strictEqual(
         Object.prototype.hasOwnProperty.call(res.headers, "Content-Type"),
         false
@@ -100,7 +101,7 @@ describe("res.status=", () => {
     it("should strip content related header fields after status set", async () => {
       const app = new Koa();
 
-      app.use((ctx) => {
+      app.use(async (ctx: any) => {
         ctx.status = status;
         ctx.body = { foo: "bar" };
         ctx.set("Content-Type", "application/json; charset=utf-8");
@@ -108,8 +109,9 @@ describe("res.status=", () => {
         ctx.set("Transfer-Encoding", "chunked");
       });
 
-      const res = await request(app.callback()).get("/").expect(status);
+      const res = await request(app.callback()).get("/");
 
+      assert.strictEqual(res.status, status);
       assert.strictEqual(
         Object.prototype.hasOwnProperty.call(res.headers, "Content-Type"),
         false
