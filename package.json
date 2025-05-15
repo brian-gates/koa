@@ -68,6 +68,7 @@
   },
   "devDependencies": {
     "@types/debug": "^4.1.12",
+    "@types/delegates": "^1.0.3",
     "@types/http-errors": "^2.0.4",
     "@types/koa-compose": "^3.2.8",
     "@types/module-alias": "^2.0.4",
