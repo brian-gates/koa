@@ -18,9 +18,10 @@
     "~": "src"
   },
   "scripts": {
-    "test": "npm run build && node --test",
+    "test": "find src -name \"*.test.ts\" | xargs ts-node",
     "test:source": "node --test",
     "test:ts": "find src -name \"*.test.ts\" | xargs ts-node",
+    "test:compiled": "npm run build && node --test",
     "test:coverage": "npm run build && c8 --reporter=lcov --reporter=text-summary node --test",
     "lint": "eslint . --ext .js,.ts",
     "lint:fix": "eslint . --ext .js,.ts --fix",
