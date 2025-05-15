@@ -1,6 +1,6 @@
 import fs from "fs";
 import assert from "node:assert/strict";
-import {describe, it} from "node:test";
+import { describe, it } from "node:test";
 import createContext from "../../test-helpers/context";
 
 describe("res.length", () => {
@@ -42,11 +42,11 @@ describe("res.length", () => {
         res.body = Buffer.from("foo bar");
         assert.strictEqual(res.length, 7);
 
-        res.body = {"hello": "world"};
+        res.body = { hello: "world" };
         res.remove("Content-Length");
         assert.strictEqual(res.length, 17);
 
-        res.body = {"hello": "world"};
+        res.body = { hello: "world" };
         assert.strictEqual(res.length, 17);
 
         res.body = fs.createReadStream("package.json");

@@ -14,8 +14,8 @@ import statuses from "statuses";
 import { is as typeis } from "type-is";
 import * as util from "util";
 import vary from "vary";
-import isStream from "~/is-stream";
-import only from "~/only";
+import { isStream } from "./is-stream";
+import only from "./only";
 
 /**
  * Prototype.
@@ -509,7 +509,7 @@ const response = {
       this.res.setHeader(field, val);
     } else {
       Object.keys(field).forEach((header) =>
-        this.res.setHeader(header, field[header])
+        this.res.setHeader(header, field[header]),
       );
     }
   },

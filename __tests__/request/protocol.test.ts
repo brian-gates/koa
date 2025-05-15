@@ -1,12 +1,12 @@
 import assert from "node:assert/strict";
-import {describe, it} from "node:test";
-import {request} from "../../test-helpers/context";
+import { describe, it } from "node:test";
+import { request } from "../../test-helpers/context";
 
 describe("req.protocol", () => {
   describe("when encrypted", () => {
     it('should return "https"', () => {
       const req = request() as any;
-      req.req.socket = {"encrypted": true};
+      req.req.socket = { encrypted: true };
       assert.strictEqual(req.protocol, "https");
     });
   });

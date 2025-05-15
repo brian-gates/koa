@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
-import {describe, it} from "node:test";
+import { describe, it } from "node:test";
 import statuses from "statuses";
 import request from "supertest";
 import Koa from "../..";
@@ -80,7 +80,7 @@ describe("app.respond", () => {
 
       assert.strictEqual(
         Object.prototype.hasOwnProperty.call(res.headers, "Content-Type"),
-        false
+        false,
       );
     });
   });
@@ -97,7 +97,7 @@ describe("app.respond", () => {
 
       assert.strictEqual(
         res.headers["content-type"],
-        "text/plain; charset=utf-8"
+        "text/plain; charset=utf-8",
       );
       assert.strictEqual(res.headers["content-length"], "5");
       assert(!res.text);
@@ -107,14 +107,14 @@ describe("app.respond", () => {
       const app = new Koa();
 
       app.use(async (ctx) => {
-        ctx.body = {"hello": "world"};
+        ctx.body = { hello: "world" };
       });
 
       const res = await request(app.callback()).head("/").expect(200);
 
       assert.strictEqual(
         res.headers["content-type"],
-        "application/json; charset=utf-8"
+        "application/json; charset=utf-8",
       );
       assert.strictEqual(res.headers["content-length"], "17");
       assert(!res.text);
@@ -131,7 +131,7 @@ describe("app.respond", () => {
 
       assert.strictEqual(
         res.headers["content-type"],
-        "text/plain; charset=utf-8"
+        "text/plain; charset=utf-8",
       );
       assert.strictEqual(res.headers["content-length"], "11");
       assert(!res.text);
@@ -148,7 +148,7 @@ describe("app.respond", () => {
 
       assert.strictEqual(
         res.headers["content-type"],
-        "application/octet-stream"
+        "application/octet-stream",
       );
       assert.strictEqual(res.headers["content-length"], "11");
       assert(!res.text);
@@ -157,7 +157,7 @@ describe("app.respond", () => {
     it("should keep stream header if set manually", async () => {
       const app = new Koa();
 
-      const {size} = fs.statSync("package.json");
+      const { size } = fs.statSync("package.json");
 
       app.use(async (ctx) => {
         (ctx as any).length = size;
@@ -286,7 +286,7 @@ describe("app.respond", () => {
 
         assert.strictEqual(
           Object.prototype.hasOwnProperty.call(res.headers, "Content-Type"),
-          false
+          false,
         );
       });
     });
@@ -306,7 +306,7 @@ describe("app.respond", () => {
 
         assert.strictEqual(
           Object.prototype.hasOwnProperty.call(res.headers, "Content-Type"),
-          false
+          false,
         );
       });
     });
@@ -326,7 +326,7 @@ describe("app.respond", () => {
 
         assert.strictEqual(
           Object.prototype.hasOwnProperty.call(res.headers, "Content-Type"),
-          false
+          false,
         );
       });
     });
@@ -392,7 +392,7 @@ describe("app.respond", () => {
 
       assert.strictEqual(
         Object.prototype.hasOwnProperty.call(res.headers, "Content-Type"),
-        false
+        false,
       );
     });
 
@@ -408,7 +408,7 @@ describe("app.respond", () => {
 
       assert.strictEqual(
         Object.prototype.hasOwnProperty.call(res.headers, "Content-Type"),
-        false
+        false,
       );
     });
 
@@ -424,7 +424,7 @@ describe("app.respond", () => {
 
       assert.strictEqual(
         Object.prototype.hasOwnProperty.call(res.headers, "Content-Type"),
-        false
+        false,
       );
     });
 
@@ -440,7 +440,7 @@ describe("app.respond", () => {
 
       assert.strictEqual(
         Object.prototype.hasOwnProperty.call(res.headers, "Content-Type"),
-        false
+        false,
       );
     });
   });

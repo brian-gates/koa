@@ -1,6 +1,6 @@
 import * as koaESM from "koa";
 import assert from "node:assert/strict";
-import {describe, it} from "node:test";
+import { describe, it } from "node:test";
 
 // For CommonJS import
 const koaCJS = require("../");
@@ -29,14 +29,14 @@ describe("Load with esm", () => {
     assert.strictEqual(exported.size, required.size);
     assert.strictEqual(
       [...exported].every((property) => required.has(property)),
-      true
+      true,
     );
   });
 
   it("CommonJS exports default property", async () => {
     assert.strictEqual(
       Object.prototype.hasOwnProperty.call(koaCJS, "default"),
-      true
+      true,
     );
   });
 

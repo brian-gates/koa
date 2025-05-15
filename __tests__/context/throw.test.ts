@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import {describe, it} from "node:test";
+import { describe, it } from "node:test";
 import createContext from "../../test-helpers/context";
 
 describe("ctx.throw(msg)", () => {
@@ -93,7 +93,7 @@ describe("ctx.throw(status, msg, props)", () => {
     const ctx = createContext() as any;
 
     try {
-      ctx.throw(400, "msg", {"prop": true});
+      ctx.throw(400, "msg", { prop: true });
     } catch (err: any) {
       assert.strictEqual(err.message, "msg");
       assert.strictEqual(err.status, 400);
@@ -108,8 +108,8 @@ describe("ctx.throw(status, msg, props)", () => {
 
       try {
         ctx.throw(400, "msg", {
-          "prop": true,
-          "status": -1,
+          prop: true,
+          status: -1,
         });
       } catch (err: any) {
         assert.strictEqual(err.message, "msg");
@@ -126,7 +126,7 @@ describe("ctx.throw(msg, props)", () => {
     const ctx = createContext() as any;
 
     try {
-      ctx.throw("msg", {"prop": true});
+      ctx.throw("msg", { prop: true });
     } catch (err: any) {
       assert.strictEqual(err.message, "msg");
       assert.strictEqual(err.status, 500);
@@ -141,7 +141,7 @@ describe("ctx.throw(status, props)", () => {
     const ctx = createContext() as any;
 
     try {
-      ctx.throw(400, {"prop": true});
+      ctx.throw(400, { prop: true });
     } catch (err: any) {
       assert.strictEqual(err.message, "Bad Request");
       assert.strictEqual(err.status, 400);
@@ -156,7 +156,7 @@ describe("ctx.throw(err, props)", () => {
     const ctx = createContext() as any;
 
     try {
-      ctx.throw(new Error("test"), {"prop": true});
+      ctx.throw(new Error("test"), { prop: true });
     } catch (err: any) {
       assert.strictEqual(err.message, "test");
       assert.strictEqual(err.status, 500);

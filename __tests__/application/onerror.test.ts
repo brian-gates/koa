@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import {describe, it, mock} from "node:test";
+import { describe, it, mock } from "node:test";
 import vm from "vm";
 import Koa from "../..";
 
@@ -12,7 +12,7 @@ describe("app.onerror(err)", () => {
         (app as any).onerror("foo");
       },
       TypeError,
-      "non-error thrown: foo"
+      "non-error thrown: foo",
     );
   });
 
@@ -21,8 +21,8 @@ describe("app.onerror(err)", () => {
 
     const app = new Koa();
     const error = Object.assign(new ExternError("boom"), {
-      "status": 418,
-      "expose": true,
+      status: 418,
+      expose: true,
     });
 
     assert.doesNotThrow(() => app.onerror(error));

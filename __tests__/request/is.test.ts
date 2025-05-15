@@ -1,10 +1,11 @@
 import assert from "node:assert/strict";
-import {describe, it} from "node:test";
+import { describe, it } from "node:test";
 import createContext from "../../test-helpers/context";
+import { asTestContext } from "../../test-helpers/types";
 
 describe("ctx.is(type)", () => {
   it("should ignore params", () => {
-    const ctx = createContext() as any;
+    const ctx = asTestContext(createContext());
     ctx.header["content-type"] = "text/html; charset=utf-8";
     ctx.header["transfer-encoding"] = "chunked";
 
@@ -13,7 +14,7 @@ describe("ctx.is(type)", () => {
 
   describe("when no body is given", () => {
     it("should return null", () => {
-      const ctx = createContext() as any;
+      const ctx = asTestContext(createContext());
 
       assert.strictEqual(ctx.is(), null);
       assert.strictEqual(ctx.is("image/*"), null);
@@ -23,7 +24,7 @@ describe("ctx.is(type)", () => {
 
   describe("when no content type is given", () => {
     it("should return false", () => {
-      const ctx = createContext() as any;
+      const ctx = asTestContext(createContext());
       ctx.header["transfer-encoding"] = "chunked";
 
       assert.strictEqual(ctx.is(), false);
@@ -34,7 +35,7 @@ describe("ctx.is(type)", () => {
 
   describe("give no types", () => {
     it("should return the mime type", () => {
-      const ctx = createContext() as any;
+      const ctx = asTestContext(createContext());
       ctx.header["content-type"] = "image/png";
       ctx.header["transfer-encoding"] = "chunked";
 
@@ -44,7 +45,7 @@ describe("ctx.is(type)", () => {
 
   describe("given one type", () => {
     it("should return the type or false", () => {
-      const ctx = createContext() as any;
+      const ctx = asTestContext(createContext());
       ctx.header["content-type"] = "image/png";
       ctx.header["transfer-encoding"] = "chunked";
 
@@ -64,7 +65,7 @@ describe("ctx.is(type)", () => {
 
   describe("given multiple types", () => {
     it("should return the first match or false", () => {
-      const ctx = createContext() as any;
+      const ctx = asTestContext(createContext());
       ctx.header["content-type"] = "image/png";
       ctx.header["transfer-encoding"] = "chunked";
 
@@ -75,24 +76,36 @@ describe("ctx.is(type)", () => {
       assert.strictEqual(ctx.is("image/*", "image/png"), "image/png");
       assert.strictEqual(ctx.is("image/png", "image/*"), "image/png");
 
-      assert.strictEqual(ctx.is(["text/*", "image/*"]), "image/png");
-      assert.strictEqual(ctx.is(["image/*", "text/*"]), "image/png");
-      assert.strictEqual(ctx.is(["image/*", "image/png"]), "image/png");
-      assert.strictEqual(ctx.is(["image/png", "image/*"]), "image/png");
+      assert.strictEqual(
+        ctx.is(["text/*", "image/*"] as string[]),
+        "image/png",
+      );
+      assert.strictEqual(
+        ctx.is(["image/*", "text/*"] as string[]),
+        "image/png",
+      );
+      assert.strictEqual(
+        ctx.is(["image/*", "image/png"] as string[]),
+        "image/png",
+      );
+      assert.strictEqual(
+        ctx.is(["image/png", "image/*"] as string[]),
+        "image/png",
+      );
 
       assert.strictEqual(ctx.is("jpeg"), false);
       assert.strictEqual(ctx.is(".jpeg"), false);
       assert.strictEqual(ctx.is("text/*", "application/*"), false);
       assert.strictEqual(
         ctx.is("text/html", "text/plain", "application/json; charset=utf-8"),
-        false
+        false,
       );
     });
   });
 
   describe("when Content-Type: application/x-www-form-urlencoded", () => {
     it('should match "urlencoded"', () => {
-      const ctx = createContext() as any;
+      const ctx = asTestContext(createContext());
       ctx.header["content-type"] = "application/x-www-form-urlencoded";
       ctx.header["transfer-encoding"] = "chunked";
 

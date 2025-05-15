@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import {describe, it} from "node:test";
+import { describe, it } from "node:test";
 import request from "supertest";
 import Koa from "../..";
 
@@ -31,7 +31,7 @@ describe("app.compose", () => {
     const calls: number[] = [];
     let count = 0;
     const app = new Koa({
-      compose(fns){
+      compose(fns) {
         return async (ctx) => {
           const dispatch = async () => {
             count++;

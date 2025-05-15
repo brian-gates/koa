@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import {describe, it} from "node:test";
+import { describe, it } from "node:test";
 import util from "util";
 import prototype from "../../lib/context";
 import createContext from "../../test-helpers/context";
@@ -18,7 +18,7 @@ describe("ctx.inspect()", () => {
     assert.deepStrictEqual(prototype, prototype.inspect());
     assert.deepStrictEqual(
       util.inspect(prototype.inspect()),
-      util.inspect(prototype)
+      util.inspect(prototype),
     );
   });
 });

@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import {describe, it} from "node:test";
+import { describe, it } from "node:test";
 import createContext from "../../test-helpers/context";
 
 describe("ctx.acceptsEncodings()", () => {
@@ -23,7 +23,7 @@ describe("ctx.acceptsEncodings()", () => {
         assert.deepStrictEqual(ctx.acceptsEncodings(), ["identity"]);
         assert.strictEqual(
           ctx.acceptsEncodings("gzip", "deflate", "identity"),
-          "identity"
+          "identity",
         );
       });
     });

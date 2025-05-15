@@ -1,33 +1,34 @@
 import assert from "node:assert/strict";
-import {describe, it} from "node:test";
+import { describe, it } from "node:test";
 import request from "supertest";
 import Koa from "../..";
 import createContext from "../../test-helpers/context";
+import { asTestContext } from "../../test-helpers/types";
 
 describe("ctx.redirect(url)", () => {
   it("should redirect to the given url", () => {
-    const ctx = createContext() as any;
+    const ctx = asTestContext(createContext());
     ctx.redirect("http://google.com");
     assert.strictEqual(ctx.response.header.location, "http://google.com/");
     assert.strictEqual(ctx.status, 302);
   });
 
   it("should formatting url before redirect", () => {
-    const ctx = createContext() as any;
+    const ctx = asTestContext(createContext());
     ctx.redirect("http://google.com\\@apple.com");
     assert.strictEqual(
       ctx.response.header.location,
-      "http://google.com/@apple.com"
+      "http://google.com/@apple.com",
     );
     assert.strictEqual(ctx.status, 302);
   });
 
   it("should formatting url before redirect", () => {
-    const ctx = createContext() as any;
+    const ctx = asTestContext(createContext());
     ctx.redirect("HTTP://google.com\\@apple.com");
     assert.strictEqual(
       ctx.response.header.location,
-      "http://google.com/@apple.com"
+      "http://google.com/@apple.com",
     );
     assert.strictEqual(ctx.status, 302);
   });
@@ -35,8 +36,8 @@ describe("ctx.redirect(url)", () => {
   it("should auto fix not encode url", async () => {
     const app = new Koa();
 
-    app.use(async (ctx: any) => {
-      ctx.redirect("http://google.com/😓");
+    app.use(async (ctx) => {
+      asTestContext(ctx).redirect("http://google.com/😓");
     });
 
     const res = await request(app.callback()).get("/");
@@ -47,26 +48,26 @@ describe("ctx.redirect(url)", () => {
 
   describe("when html is accepted", () => {
     it("should respond with html", () => {
-      const ctx = createContext() as any;
+      const ctx = asTestContext(createContext());
       const url = "http://google.com/";
       ctx.header.accept = "text/html";
       ctx.redirect(url);
       assert.strictEqual(
         ctx.response.header["content-type"],
-        "text/html; charset=utf-8"
+        "text/html; charset=utf-8",
       );
       assert.strictEqual(ctx.body, `Redirecting to ${url}.`);
     });
 
     it("should escape the url", () => {
-      const ctx = createContext() as any;
+      const ctx = asTestContext(createContext());
       let url = "<script>";
       ctx.header.accept = "text/html";
       ctx.redirect(url);
       url = escape(url);
       assert.strictEqual(
         ctx.response.header["content-type"],
-        "text/html; charset=utf-8"
+        "text/html; charset=utf-8",
       );
       assert.strictEqual(ctx.body, `Redirecting to ${url}.`);
     });
@@ -74,7 +75,7 @@ describe("ctx.redirect(url)", () => {
 
   describe("when text is accepted", () => {
     it("should respond with text", () => {
-      const ctx = createContext() as any;
+      const ctx = asTestContext(createContext());
       const url = "http://google.com";
       ctx.header.accept = "text/plain";
       ctx.redirect(url);
@@ -84,7 +85,7 @@ describe("ctx.redirect(url)", () => {
 
   describe("when status is 301", () => {
     it("should not change the status code", () => {
-      const ctx = createContext() as any;
+      const ctx = asTestContext(createContext());
       const url = "http://google.com";
       ctx.status = 301;
       ctx.header.accept = "text/plain";
@@ -96,7 +97,7 @@ describe("ctx.redirect(url)", () => {
 
   describe("when status is 304", () => {
     it("should change the status code", () => {
-      const ctx = createContext() as any;
+      const ctx = asTestContext(createContext());
       const url = "http://google.com";
       ctx.status = 304;
       ctx.header.accept = "text/plain";
@@ -108,7 +109,7 @@ describe("ctx.redirect(url)", () => {
 
   describe("when content-type was present", () => {
     it("should overwrite content-type", () => {
-      const ctx = createContext() as any;
+      const ctx = asTestContext(createContext());
       ctx.body = {};
       const url = "http://google.com";
       ctx.header.accept = "text/plain";
@@ -120,7 +121,7 @@ describe("ctx.redirect(url)", () => {
   });
 });
 
-function escape(html: string): string{
+function escape(html: string): string {
   return String(html)
     .replace(/&/g, "&amp;")
     .replace(/"/g, "&quot;")

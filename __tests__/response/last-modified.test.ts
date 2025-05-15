@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import {describe, it} from "node:test";
+import { describe, it } from "node:test";
 import createContext from "../../test-helpers/context";
 
 describe("res.lastModified", () => {
@@ -24,7 +24,7 @@ describe("res.lastModified", () => {
     res.lastModified = date;
     assert.strictEqual(
       res.lastModified.getTime() / 1000,
-      Math.floor(date.getTime() / 1000)
+      Math.floor(date.getTime() / 1000),
     );
   });
 

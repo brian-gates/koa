@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import {describe, it} from "node:test";
+import { describe, it } from "node:test";
 import request from "supertest";
 import Koa from "../..";
 
@@ -16,7 +16,7 @@ describe("ctx.cookies", () => {
       const res = await request(app.callback()).get("/").expect(204);
 
       const cookie = res.headers["set-cookie"].some((cookie: string) =>
-        /^name=/.test(cookie)
+        /^name=/.test(cookie),
       );
       assert.strictEqual(cookie, true);
     });
@@ -28,7 +28,7 @@ describe("ctx.cookies", () => {
 
           app.use(async (ctx) => {
             try {
-              ctx.cookies.set("foo", "bar", {"signed": true});
+              ctx.cookies.set("foo", "bar", { signed: true });
             } catch (err: any) {
               ctx.body = err.message;
             }
@@ -46,7 +46,7 @@ describe("ctx.cookies", () => {
         app.keys = ["a", "b"];
 
         app.use(async (ctx) => {
-          ctx.cookies.set("name", "jon", {"signed": true});
+          ctx.cookies.set("name", "jon", { signed: true });
           ctx.status = 204;
         });
 
@@ -56,11 +56,11 @@ describe("ctx.cookies", () => {
 
         assert.strictEqual(
           cookies.some((cookie: string) => /^name=/.test(cookie)),
-          true
+          true,
         );
         assert.strictEqual(
           cookies.some((cookie: string) => /(,|^)name\.sig=/.test(cookie)),
-          true
+          true,
         );
       });
     });
@@ -73,7 +73,7 @@ describe("ctx.cookies", () => {
         app.keys = ["a", "b"];
 
         app.use(async (ctx) => {
-          ctx.cookies.set("name", "jon", {"signed": true});
+          ctx.cookies.set("name", "jon", { signed: true });
           ctx.status = 204;
         });
 
@@ -85,15 +85,15 @@ describe("ctx.cookies", () => {
         const cookies = res.headers["set-cookie"];
         assert.strictEqual(
           cookies.some((cookie: string) => /^name=/.test(cookie)),
-          true
+          true,
         );
         assert.strictEqual(
           cookies.some((cookie: string) => /(,|^)name\.sig=/.test(cookie)),
-          true
+          true,
         );
         assert.strictEqual(
           cookies.every((cookie: string) => /secure/.test(cookie)),
-          true
+          true,
         );
       });
     });
@@ -105,7 +105,7 @@ describe("ctx.cookies", () => {
 
       app.use(async (ctx) => {
         ctx.cookies = {
-          set(key: string, value: string){
+          set(key: string, value: string) {
             ctx.set(key, value);
           },
         };

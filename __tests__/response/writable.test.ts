@@ -1,7 +1,7 @@
-import {once} from "events";
+import { once } from "events";
 import net from "net";
 import assert from "node:assert/strict";
-import {describe, it} from "node:test";
+import { describe, it } from "node:test";
 import Koa from "../../";
 
 describe("res.writable", () => {
@@ -19,7 +19,7 @@ describe("res.writable", () => {
       const buf = Buffer.from(
         "GET / HTTP/1.1\r\nHost: localhost:" +
           port +
-          "\r\nConnection: keep-alive\r\n\r\n"
+          "\r\nConnection: keep-alive\r\n\r\n",
       );
 
       const client = net.connect(port);
@@ -62,7 +62,7 @@ describe("res.writable", () => {
       const buf = Buffer.from(
         "GET / HTTP/1.1\r\nHost: localhost:" +
           port +
-          "\r\nConnection: keep-alive\r\n\r\n"
+          "\r\nConnection: keep-alive\r\n\r\n",
       );
       const client = net.connect(port);
       await once(client, "connect");
@@ -96,7 +96,7 @@ describe("res.writable", () => {
       const buf = Buffer.from(
         "GET / HTTP/1.1\r\nHost: localhost:" +
           port +
-          "\r\nConnection: keep-alive\r\n\r\n"
+          "\r\nConnection: keep-alive\r\n\r\n",
       );
 
       const client = net.connect(port);

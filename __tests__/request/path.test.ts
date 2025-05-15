@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import {describe, it} from "node:test";
+import { describe, it } from "node:test";
 import parseurl from "parseurl";
 import createContext from "../../test-helpers/context";
 
@@ -22,7 +22,7 @@ describe("ctx.path=", () => {
   });
 
   it("should change .url but not .originalUrl", () => {
-    const ctx = createContext({"url": "/login"}) as any;
+    const ctx = createContext({ url: "/login" }) as any;
     ctx.path = "/logout";
     assert.strictEqual(ctx.url, "/logout");
     assert.strictEqual(ctx.originalUrl, "/login");
@@ -30,7 +30,7 @@ describe("ctx.path=", () => {
   });
 
   it("should not affect parseurl", () => {
-    const ctx = createContext({"url": "/login?foo=bar"}) as any;
+    const ctx = createContext({ url: "/login?foo=bar" }) as any;
     ctx.path = "/login";
     const url = parseurl(ctx.req);
     assert.strictEqual(url.path, "/login?foo=bar");

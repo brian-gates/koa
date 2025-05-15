@@ -1,17 +1,17 @@
 import assert from "node:assert/strict";
-import {describe, it} from "node:test";
+import { describe, it } from "node:test";
 import createContext from "../../test-helpers/context";
 
 describe("ctx.search=", () => {
   it("should replace the search", () => {
-    const ctx = createContext({"url": "/store/shoes"});
+    const ctx = createContext({ url: "/store/shoes" });
     (ctx as any).search = "?page=2&color=blue";
     assert.strictEqual((ctx as any).url, "/store/shoes?page=2&color=blue");
     assert.strictEqual((ctx as any).search, "?page=2&color=blue");
   });
 
   it("should update ctx.querystring and ctx.query", () => {
-    const ctx = createContext({"url": "/store/shoes"});
+    const ctx = createContext({ url: "/store/shoes" });
     (ctx as any).search = "?page=2&color=blue";
     assert.strictEqual((ctx as any).url, "/store/shoes?page=2&color=blue");
     assert.strictEqual((ctx as any).querystring, "page=2&color=blue");
@@ -20,7 +20,7 @@ describe("ctx.search=", () => {
   });
 
   it("should change .url but not .originalUrl", () => {
-    const ctx = createContext({"url": "/store/shoes"});
+    const ctx = createContext({ url: "/store/shoes" });
     (ctx as any).search = "?page=2&color=blue";
     assert.strictEqual((ctx as any).url, "/store/shoes?page=2&color=blue");
     assert.strictEqual((ctx as any).originalUrl, "/store/shoes");
@@ -29,7 +29,7 @@ describe("ctx.search=", () => {
 
   describe("when missing", () => {
     it('should return ""', () => {
-      const ctx = createContext({"url": "/store/shoes"});
+      const ctx = createContext({ url: "/store/shoes" });
       assert.strictEqual((ctx as any).search, "");
     });
   });

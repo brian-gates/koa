@@ -159,7 +159,7 @@ import path from "path";
 import * as util from "util";
 import escapeHtml from "escape-html";
 import onFinished from "on-finished";
-import only from "~/only";
+import only from "./only";
 
 export default MyClass;
 // OR
@@ -325,7 +325,7 @@ export type Next = () => Promise<void>;
 
 export type Middleware<StateT = any, ContextT = Context> = (
   ctx: ContextT,
-  next: Next
+  next: Next,
 ) => any;
 ```
 

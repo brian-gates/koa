@@ -8,13 +8,60 @@ import onFinished from "on-finished";
 import statuses from "statuses";
 import * as util from "util";
 import context from "./context";
-import isStream from "./is-stream";
+import { isStream } from "./is-stream";
 import only from "./only";
 import request from "./request";
 import response from "./response";
-import { Context, Middleware } from "./types";
 
 const debug = debugModule("koa:application");
+
+export interface Request {
+  app: Application;
+  req: http.IncomingMessage;
+  res: http.ServerResponse;
+  ctx: Context;
+  response: Response;
+  originalUrl?: string;
+}
+
+export interface Response {
+  app: Application;
+  req: http.IncomingMessage;
+  res: http.ServerResponse;
+  ctx: Context;
+  request: Request;
+  _explicitNullBody?: boolean;
+  has(field: string): boolean;
+  remove(field: string): void;
+  length?: number;
+}
+
+// Base interface with minimal required properties
+export interface Context {
+  app: Application;
+  request: Request;
+  response: Response;
+  req: http.IncomingMessage;
+  res: http.ServerResponse;
+  originalUrl?: string;
+  state?: Record<string, unknown>;
+  respond?: boolean;
+  method?: string;
+  status?: number;
+  message?: string;
+  body?: string | Buffer | object | null | NodeJS.ReadableStream;
+  length?: number;
+  type?: string;
+  writable?: boolean;
+  headerSent?: boolean;
+  onerror: (err: Error) => void;
+}
+
+// Type for middleware next function
+export type Next = () => Promise<void>;
+
+// Type for middleware function
+export type Middleware = (ctx: Context, next: Next) => Promise<void>;
 
 class Application extends EventEmitter {
   proxy: boolean;
@@ -84,14 +131,14 @@ class Application extends EventEmitter {
    * Return JSON representation.
    * We only bother showing settings.
    */
-  toJSON(): Record<string, unknown> {
+  toJSON() {
     return only(this, ["subdomainOffset", "proxy", "env"]);
   }
 
   /**
    * Inspect implementation.
    */
-  inspect(): Record<string, unknown> {
+  inspect() {
     return this.toJSON();
   }
 
@@ -112,17 +159,14 @@ class Application extends EventEmitter {
    * Return a request handler callback
    * for node's native http server.
    */
-  callback(): (
-    req: http.IncomingMessage,
-    res: http.ServerResponse
-  ) => Promise<void> {
+  callback() {
     const fn = this.compose(this.middleware);
 
     if (!this.listenerCount("error")) this.on("error", this.onerror);
 
     const handleRequest = (
       req: http.IncomingMessage,
-      res: http.ServerResponse
+      res: http.ServerResponse,
     ) => {
       const ctx = this.createContext(req, res);
       if (!this.ctxStorage) {
@@ -146,7 +190,7 @@ class Application extends EventEmitter {
   /**
    * Handle request in callback.
    */
-  handleRequest(ctx: Context, fnMiddleware: Function): Promise<void> {
+  handleRequest(ctx: Context, fnMiddleware: Function) {
     const res = ctx.res;
     res.statusCode = 404;
     const onerror = (err: Error) => ctx.onerror(err);
@@ -158,18 +202,100 @@ class Application extends EventEmitter {
   /**
    * Initialize a new context.
    */
-  createContext(req: http.IncomingMessage, res: http.ServerResponse): Context {
-    const context = Object.create(this.context);
-    const request = (context.request = Object.create(this.request));
-    const response = (context.response = Object.create(this.response));
-    context.app = request.app = response.app = this;
-    context.req = request.req = response.req = req;
-    context.res = request.res = response.res = res;
+  createContext(req: http.IncomingMessage, res: http.ServerResponse) {
+    // Forward declarations to handle circular references
+    type KoaResponseType = KoaResponse;
+    type KoaContextType = KoaContext;
+
+    // Use proper class instances with constructor parameters
+    class KoaRequest {
+      app: Application;
+      req: http.IncomingMessage;
+      res: http.ServerResponse;
+      ctx: KoaContextType;
+      response: KoaResponseType;
+      originalUrl?: string;
+
+      constructor(appInstance: Application) {
+        this.app = appInstance;
+        // Copy all properties from the prototype
+        Object.setPrototypeOf(this, appInstance.request);
+      }
+    }
+
+    class KoaResponse {
+      app: Application;
+      req: http.IncomingMessage;
+      res: http.ServerResponse;
+      ctx: KoaContextType;
+      request: KoaRequest;
+      _explicitNullBody?: boolean;
+      length?: number;
+
+      constructor(appInstance: Application) {
+        this.app = appInstance;
+        // Copy all properties from the prototype
+        Object.setPrototypeOf(this, appInstance.response);
+      }
+
+      has(field: string): boolean {
+        // This will be overridden by the prototype
+        return false;
+      }
+
+      remove(field: string): void {
+        // This will be overridden by the prototype
+      }
+    }
+
+    class KoaContext implements Context {
+      app: Application;
+      request: KoaRequest;
+      response: KoaResponse;
+      req: http.IncomingMessage;
+      res: http.ServerResponse;
+      originalUrl: string;
+      state: Record<string, unknown> = {};
+      respond?: boolean;
+      method?: string;
+      status?: number;
+      message?: string;
+      body?: string | Buffer | object | null | NodeJS.ReadableStream;
+      length?: number;
+      type?: string;
+      writable: boolean = true;
+      headerSent: boolean = false;
+
+      constructor(appInstance: Application) {
+        this.app = appInstance;
+        // Copy all properties from the prototype
+        Object.setPrototypeOf(this, appInstance.context);
+      }
+
+      onerror(err: Error) {
+        // This method will be overridden by the prototype
+        // but we need it for type compatibility
+      }
+    }
+
+    // Create instances with 'this'
+    const request = new KoaRequest(this);
+    const response = new KoaResponse(this);
+    const context = new KoaContext(this);
+
+    // Set up circular references
+    request.req = response.req = context.req = req;
+    request.res = response.res = context.res = res;
+
     request.ctx = response.ctx = context;
     request.response = response;
     response.request = request;
+
+    // Set up context properties
+    context.request = request;
+    context.response = response;
     context.originalUrl = request.originalUrl = req.url;
-    context.state = {};
+
     return context;
   }
 
@@ -253,14 +379,18 @@ function respond(ctx: Context) {
   // responses
   if (Buffer.isBuffer(body)) return res.end(body);
   if (typeof body === "string") return res.end(body);
-  if (isStream(body)) return body.pipe(res);
-
-  // body: json
-  body = JSON.stringify(body);
-  if (!res.headersSent) {
-    ctx.length = Buffer.byteLength(body);
+  if (isStream(body)) {
+    // Type guard to ensure body has pipe method
+    const streamBody = body as NodeJS.ReadableStream;
+    return streamBody.pipe(res);
   }
-  res.end(body);
+
+  // body: json (must be an object at this point)
+  const jsonBody = JSON.stringify(body);
+  if (!res.headersSent) {
+    ctx.length = Buffer.byteLength(jsonBody);
+  }
+  res.end(jsonBody);
 }
 
 export { HttpError };

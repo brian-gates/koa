@@ -1,5 +1,7 @@
+import type { IncomingMessage, ServerResponse } from "http";
 import { Duplex, Readable, Writable } from "stream";
 import Application from "../src/application";
+import { TestContext } from "./types";
 
 type Request = Partial<Readable> & {
   headers?: Record<string, string>;
@@ -19,8 +21,8 @@ type Response = Partial<Writable> & {
 const createContext = (
   req: Request = {},
   res: Response = {},
-  app?: Application
-) => {
+  app?: Application,
+): TestContext => {
   const socket = new Duplex();
   req = Object.assign({ headers: {}, socket }, Readable.prototype, req);
   res = Object.assign({ _headers: {}, socket }, Writable.prototype, res);
@@ -35,19 +37,22 @@ const createContext = (
     if (res._headers) delete res._headers[k.toLowerCase()];
   };
 
-  return koaApp.createContext(req as any, res as any);
+  return koaApp.createContext(
+    req as IncomingMessage,
+    res as ServerResponse,
+  ) as TestContext;
 };
 
 export const request = (
   req: Request = {},
   res: Response = {},
-  app?: Application
+  app?: Application,
 ) => createContext(req, res, app).request;
 
 export const response = (
   req: Request = {},
   res: Response = {},
-  app?: Application
+  app?: Application,
 ) => createContext(req, res, app).response;
 
 export default createContext;

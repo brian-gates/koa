@@ -3,10 +3,11 @@
   "extends": [
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
-    "plugin:node/recommended"
+    "plugin:node/recommended",
+    "plugin:prettier/recommended"
   ],
   "parser": "@typescript-eslint/parser",
-  "plugins": ["@typescript-eslint", "node"],
+  "plugins": ["@typescript-eslint", "node", "prettier"],
   "parserOptions": {
     "ecmaVersion": 2020,
     "sourceType": "module"
@@ -30,7 +31,14 @@
     "quote-props": "off",
     "getter-return": "off",
     "quotes": "off",
-    "semi": "off"
+    "semi": "off",
+    "prettier/prettier": [
+      "error",
+      {
+        "bracketSpacing": true,
+        "endOfLine": "auto"
+      }
+    ]
   },
   "ignorePatterns": ["dist/", "node_modules/"]
 }

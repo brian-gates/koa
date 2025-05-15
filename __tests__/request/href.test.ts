@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
-import {describe, it} from "node:test";
-import {Duplex, Readable} from "stream";
+import { describe, it } from "node:test";
+import { Duplex, Readable } from "stream";
 import request from "supertest";
 import Application from "../../src/application";
 import context from "../../test-helpers/context";
@@ -9,12 +9,12 @@ describe("ctx.href", () => {
   it("should return the full request url", () => {
     const socket = new Duplex();
     const req = {
-      "url": "/users/1?next=/dashboard",
-      "headers": {
-        "host": "localhost",
+      url: "/users/1?next=/dashboard",
+      headers: {
+        host: "localhost",
       },
       socket,
-      "__proto__": Readable.prototype,
+      __proto__: Readable.prototype,
     };
     const ctx = context(req) as any;
     assert.strictEqual(ctx.href, "http://localhost/users/1?next=/dashboard");

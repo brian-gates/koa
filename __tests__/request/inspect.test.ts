@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
-import {describe, it} from "node:test";
+import { describe, it } from "node:test";
 import * as util from "util";
-import {request} from "../../test-helpers/context";
+import { request } from "../../test-helpers/context";
 
 describe("req.inspect()", () => {
   describe("with no request.req present", () => {
@@ -21,10 +21,10 @@ describe("req.inspect()", () => {
     req.header.host = "example.com";
 
     const expected = {
-      "method": "GET",
-      "url": "example.com",
-      "header": {
-        "host": "example.com",
+      method: "GET",
+      url: "example.com",
+      header: {
+        host: "example.com",
       },
     };
 

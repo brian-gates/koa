@@ -2,153 +2,127 @@
  * Module dependencies.
  */
 
-import accepts from "accepts";
+import accepts, { Accepts } from "accepts";
 import contentType from "content-type";
+import { IncomingMessage } from "http";
 import * as net from "net";
 import parse from "parseurl";
 import { URL, format as stringify } from "url";
-import searchParams from "~/search-params";
+import searchParams from "./search-params";
 
 import fresh from "fresh";
 import typeis from "type-is";
 import * as util from "util";
-import only from "~/only";
+import only from "./only";
 
 const IP = Symbol("context#ip");
 
 /**
- * Prototype.
+ * Request class with all properties and methods
  */
+class Request {
+  req: IncomingMessage;
+  app: {
+    proxy: boolean;
+    proxyIpHeader: string;
+    maxIpsCount: number;
+    subdomainOffset: number;
+  };
+  originalUrl: string;
+  ctx: {
+    status: number;
+  };
+  response: {
+    header: Record<string, string | string[]>;
+  };
+  _querycache: Record<string, any>;
+  _accept: Accepts;
+  memoizedURL: URL | Record<string, any>;
+  [IP]: string;
 
-const request = {
   /**
    * Return request header.
-   *
-   * @return {Object}
-   * @api public
    */
-
   get header() {
     return this.req.headers;
-  },
+  }
 
   /**
    * Set request header.
-   *
-   * @api public
    */
-
-  set header(val) {
+  set header(val: Record<string, string | string[]>) {
     this.req.headers = val;
-  },
+  }
 
   /**
    * Return request header, alias as request.header
-   *
-   * @return {Object}
-   * @api public
    */
-
   get headers() {
     return this.req.headers;
-  },
+  }
 
   /**
    * Set request header, alias as request.header
-   *
-   * @api public
    */
-
   set headers(val) {
     this.req.headers = val;
-  },
+  }
 
   /**
    * Get request URL.
-   *
-   * @return {String}
-   * @api public
    */
-
   get url() {
     return this.req.url;
-  },
+  }
 
   /**
    * Set request URL.
-   *
-   * @api public
    */
-
-  set url(val) {
+  set url(val: string) {
     this.req.url = val;
-  },
+  }
 
   /**
    * Get the origin header.
-   *
-   * @return {String}
-   * @api public
    */
-
   get origin() {
-    return this.req.headers.origin || null;
-  },
+    return this.req.headers.origin;
+  }
 
   /**
    * Get full request URL.
-   *
-   * @return {String}
-   * @api public
    */
-
   get href() {
     // support: `GET http://example.com/foo`
     if (/^https?:\/\//i.test(this.originalUrl)) return this.originalUrl;
     return this.protocol + "://" + this.host + this.originalUrl;
-  },
+  }
 
   /**
    * Get request method.
-   *
-   * @return {String}
-   * @api public
    */
-
   get method() {
     return this.req.method;
-  },
+  }
 
   /**
    * Set request method.
-   *
-   * @param {String} val
-   * @api public
    */
-
-  set method(val) {
+  set method(val: string) {
     this.req.method = val;
-  },
+  }
 
   /**
    * Get request pathname.
-   *
-   * @return {String}
-   * @api public
    */
-
   get path() {
     return parse(this.req).pathname;
-  },
+  }
 
   /**
    * Set pathname, retaining the query string when present.
-   *
-   * @param {String} path
-   * @api public
    */
-
-  set path(path) {
+  set path(path: string) {
     const url = parse(this.req);
     if (url.pathname === path) return;
 
@@ -156,51 +130,35 @@ const request = {
     url.path = null;
 
     this.url = stringify(url);
-  },
+  }
 
   /**
    * Get parsed query string.
-   *
-   * @return {Object}
-   * @api public
    */
-
   get query() {
     const str = this.querystring;
     const c = (this._querycache = this._querycache || {});
     return c[str] || (c[str] = searchParams.parse(str));
-  },
+  }
 
   /**
    * Set query string as an object.
-   *
-   * @param {Object} obj
-   * @api public
    */
-
-  set query(obj) {
+  set query(obj: Record<string, any>) {
     this.querystring = searchParams.stringify(obj);
-  },
+  }
 
   /**
    * Get query string.
-   *
-   * @return {String}
-   * @api public
    */
-
   get querystring() {
     if (!this.req) return "";
     return parse(this.req).query || "";
-  },
+  }
 
   /**
    * Set query string.
-   *
-   * @param {String} str
-   * @api public
    */
-
   set querystring(str) {
     const url = parse(this.req);
     if (url.search === `?${str}`) return;
@@ -208,42 +166,30 @@ const request = {
     url.search = str;
     url.path = null;
     this.url = stringify(url);
-  },
+  }
 
   /**
    * Get the search string. Same as the query string
    * except it includes the leading ?.
-   *
-   * @return {String}
-   * @api public
    */
-
   get search() {
     if (!this.querystring) return "";
     return `?${this.querystring}`;
-  },
+  }
 
   /**
    * Set the search string. Same as
    * request.querystring= but included for ubiquity.
-   *
-   * @param {String} str
-   * @api public
    */
-
   set search(str) {
     this.querystring = str;
-  },
+  }
 
   /**
    * Parse the "Host" header field host
    * and support X-Forwarded-Host when a
    * proxy is enabled.
-   *
-   * @return {String} hostname:port
-   * @api public
    */
-
   get host() {
     const proxy = this.app.proxy;
     let host = proxy && this.get("X-Forwarded-Host");
@@ -253,56 +199,44 @@ const request = {
     }
     if (!host) return "";
     return splitCommaSeparatedValues(host, 1)[0];
-  },
+  }
 
   /**
    * Parse the "Host" header field hostname
    * and support X-Forwarded-Host when a
    * proxy is enabled.
-   *
-   * @return {String} hostname
-   * @api public
    */
-
-  get hostname() {
+  get hostname(): string {
     const host = this.host;
     if (!host) return "";
     if (host[0] === "[") return this.URL.hostname || ""; // IPv6
     return host.split(":", 1)[0];
-  },
+  }
 
   /**
    * Get WHATWG parsed URL.
    * Lazily memoized.
-   *
-   * @return {URL|Object}
-   * @api public
    */
-
   get URL() {
     /* istanbul ignore else */
     if (!this.memoizedURL) {
       const originalUrl = this.originalUrl || ""; // avoid undefined in template string
       try {
         this.memoizedURL = new URL(
-          `${this.protocol}://${this.host}${originalUrl}`
+          `${this.protocol}://${this.host}${originalUrl}`,
         );
       } catch (err) {
         this.memoizedURL = Object.create(null);
       }
     }
     return this.memoizedURL;
-  },
+  }
 
   /**
    * Check if the request is fresh, aka
    * Last-Modified and/or the ETag
    * still match.
-   *
-   * @return {Boolean}
-   * @api public
    */
-
   get fresh() {
     const method = this.method;
     const s = this.ctx.status;
@@ -316,51 +250,35 @@ const request = {
     }
 
     return false;
-  },
+  }
 
   /**
    * Check if the request is stale, aka
    * "Last-Modified" and / or the "ETag" for the
    * resource has changed.
-   *
-   * @return {Boolean}
-   * @api public
    */
-
   get stale() {
     return !this.fresh;
-  },
+  }
 
   /**
    * Check if the request is idempotent.
-   *
-   * @return {Boolean}
-   * @api public
    */
-
   get idempotent() {
     const methods = ["GET", "HEAD", "PUT", "DELETE", "OPTIONS", "TRACE"];
     return !!~methods.indexOf(this.method);
-  },
+  }
 
   /**
    * Return the request socket.
-   *
-   * @return {Connection}
-   * @api public
    */
-
   get socket() {
     return this.req.socket;
-  },
+  }
 
   /**
    * Get the charset when present or undefined.
-   *
-   * @return {String}
-   * @api public
    */
-
   get charset() {
     try {
       const { parameters } = contentType.parse(this.req);
@@ -368,20 +286,16 @@ const request = {
     } catch (e) {
       return "";
     }
-  },
+  }
 
   /**
    * Return parsed Content-Length when present.
-   *
-   * @return {Number|void}
-   * @api public
    */
-
   get length() {
     const len = this.get("Content-Length");
     if (len === "") return;
     return ~~len;
-  },
+  }
 
   /**
    * Return the protocol string "http" or "https"
@@ -390,30 +304,24 @@ const request = {
    * field will be trusted. If you're running behind
    * a reverse proxy that supplies https for you this
    * may be enabled.
-   *
-   * @return {String}
-   * @api public
    */
-
   get protocol() {
-    if (this.socket.encrypted) return "https";
+    // Check for encrypted connection by safely accessing socket property
+    if (this.socket && "encrypted" in this.socket && this.socket.encrypted)
+      return "https";
     if (!this.app.proxy) return "http";
     const proto = this.get("X-Forwarded-Proto");
     return proto ? splitCommaSeparatedValues(proto, 1)[0] : "http";
-  },
+  }
 
   /**
    * Shorthand for:
    *
    *    this.protocol == 'https'
-   *
-   * @return {Boolean}
-   * @api public
    */
-
   get secure() {
     return this.protocol === "https";
-  },
+  }
 
   /**
    * When `app.proxy` is `true`, parse
@@ -422,40 +330,32 @@ const request = {
    * For example if the value was "client, proxy1, proxy2"
    * you would receive the array `["client", "proxy1", "proxy2"]`
    * where "proxy2" is the furthest down-stream.
-   *
-   * @return {Array}
-   * @api public
    */
-
   get ips() {
     const proxy = this.app.proxy;
     const val = this.get(this.app.proxyIpHeader);
-    let ips = proxy && val ? splitCommaSeparatedValues(val) : [];
+    let ips = proxy && val ? splitCommaSeparatedValues(val, Infinity) : [];
     if (this.app.maxIpsCount > 0) {
       ips = ips.slice(-this.app.maxIpsCount);
     }
     return ips;
-  },
+  }
 
   /**
    * Return request's remote address
    * When `app.proxy` is `true`, parse
    * the "X-Forwarded-For" ip address list and return the first one
-   *
-   * @return {String}
-   * @api public
    */
-
   get ip() {
     if (!this[IP]) {
       this[IP] = this.ips[0] || this.socket.remoteAddress || "";
     }
     return this[IP];
-  },
+  }
 
   set ip(_ip) {
     this[IP] = _ip;
-  },
+  }
 
   /**
    * Return subdomains as an array.
@@ -468,40 +368,28 @@ const request = {
    * If `app.subdomainOffset` is not set, this.subdomains is
    * `["ferrets", "tobi"]`.
    * If `app.subdomainOffset` is 3, this.subdomains is `["tobi"]`.
-   *
-   * @return {Array}
-   * @api public
    */
-
   get subdomains() {
     const offset = this.app.subdomainOffset;
     const hostname = this.hostname;
     if (net.isIP(hostname)) return [];
     return hostname.split(".").reverse().slice(offset);
-  },
+  }
 
   /**
    * Get accept object.
    * Lazily memoized.
-   *
-   * @return {Object}
-   * @api private
    */
-
   get accept() {
     return this._accept || (this._accept = accepts(this.req));
-  },
+  }
 
   /**
    * Set accept object.
-   *
-   * @param {Object} obj
-   * @api private
    */
-
-  set accept(obj) {
+  set accept(obj: Accepts) {
     this._accept = obj;
-  },
+  }
 
   /**
    * Check if the given `type(s)` is acceptable, returning
@@ -538,15 +426,10 @@ const request = {
    *     this.accepts(['html', 'json']);
    *     this.accepts('html', 'json');
    *     // => "json"
-   *
-   * @param {String|Array} type(s)...
-   * @return {String|Array|false}
-   * @api public
    */
-
-  accepts(...args) {
+  accepts(...args: string[]) {
     return this.accept.types(...args);
-  },
+  }
 
   /**
    * Return accepted encodings or best fit based on `encodings`.
@@ -555,15 +438,10 @@ const request = {
    * an array sorted by quality is returned:
    *
    *     ['gzip', 'deflate']
-   *
-   * @param {String|Array} encoding(s)...
-   * @return {String|Array}
-   * @api public
    */
-
-  acceptsEncodings(...args) {
+  acceptsEncodings(...args: string[]) {
     return this.accept.encodings(...args);
-  },
+  }
 
   /**
    * Return accepted charsets or best fit based on `charsets`.
@@ -572,15 +450,10 @@ const request = {
    * an array sorted by quality is returned:
    *
    *     ['utf-8', 'utf-7', 'iso-8859-1']
-   *
-   * @param {String|Array} charset(s)...
-   * @return {String|Array}
-   * @api public
    */
-
-  acceptsCharsets(...args) {
+  acceptsCharsets(...args: string[]) {
     return this.accept.charsets(...args);
-  },
+  }
 
   /**
    * Return accepted languages or best fit based on `langs`.
@@ -589,15 +462,10 @@ const request = {
    * an array sorted by quality is returned:
    *
    *     ['es', 'pt', 'en']
-   *
-   * @param {String|Array} lang(s)...
-   * @return {Array|String}
-   * @api public
    */
-
-  acceptsLanguages(...args) {
+  acceptsLanguages(...args: string[]) {
     return this.accept.languages(...args);
-  },
+  }
 
   /**
    * Check if the incoming request contains the "Content-Type"
@@ -619,30 +487,20 @@ const request = {
    *     this.is('html', 'application/*'); // => 'application/json'
    *
    *     this.is('html'); // => false
-   *
-   * @param {String|String[]} [type]
-   * @param {String[]} [types]
-   * @return {String|false|null}
-   * @api public
    */
-
   is(type, ...types) {
     return typeis(this.req, type, ...types);
-  },
+  }
 
   /**
    * Return the request mime type void of
    * parameters such as "charset".
-   *
-   * @return {String}
-   * @api public
    */
-
   get type() {
     const type = this.get("Content-Type");
     if (!type) return "";
     return type.split(";")[0];
-  },
+  }
 
   /**
    * Return request header.
@@ -660,69 +518,57 @@ const request = {
    *
    *     this.get('Something');
    *     // => ''
-   *
-   * @param {String} field
-   * @return {String}
-   * @api public
    */
-
-  get(field) {
+  get(field: string) {
     const req = this.req;
-    switch ((field = field.toLowerCase())) {
+    const headerField = field.toLowerCase();
+
+    switch (headerField) {
       case "referer":
-      case "referrer":
-        return req.headers.referrer || req.headers.referer || "";
-      default:
-        return req.headers[field] || "";
+      case "referrer": {
+        const ref = req.headers.referrer || req.headers.referer;
+        return ref ? ref.toString() : "";
+      }
+      default: {
+        const value = req.headers[headerField];
+        if (!value) return "";
+        return Array.isArray(value) ? value[0] : value;
+      }
     }
-  },
+  }
 
   /**
    * Inspect implementation.
-   *
-   * @return {Object}
-   * @api public
    */
-
   inspect() {
     if (!this.req) return;
     return this.toJSON();
-  },
+  }
 
   /**
    * Return JSON representation.
-   *
-   * @return {Object}
-   * @api public
    */
-
   toJSON() {
     return only(this, ["method", "url", "header"]);
-  },
-};
-
-/**
- * Custom inspection implementation for newer Node.js versions.
- *
- * @return {Object}
- * @api public
- */
-
-/* istanbul ignore else */
-if (util.inspect.custom) {
-  request[util.inspect.custom] = request.inspect;
+  }
 }
 
 /**
  * Split a comma-separated value string into an array of values, with an optional limit.
  * All the values are trimmed of whitespace.
- *
- * @param {string} value - The comma-separated value string to split.
- * @param {number} [limit] - The maximum number of values to return.
- * @returns {string[]} An array of values from the comma-separated string.
  */
-function splitCommaSeparatedValues(value: string, limit?: number): string[] {
-  return value.split(",", limit).map((v) => v.trim());
+function splitCommaSeparatedValues(value: string, limit?: number) {
+  return value.split(",", limit ?? Infinity).map((v) => v.trim());
 }
 
-export default request;
+// Add custom inspection implementation for newer Node.js versions
+if (util.inspect.custom) {
+  Object.defineProperty(Request.prototype, util.inspect.custom, {
+    enumerable: false,
+    value: function () {
+      return this.inspect();
+    },
+  });
+}
+
+export default Request;

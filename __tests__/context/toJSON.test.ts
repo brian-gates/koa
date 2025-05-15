@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import {describe, it} from "node:test";
+import { describe, it } from "node:test";
 import createContext from "../../test-helpers/context";
 
 describe("ctx.toJSON()", () => {
@@ -18,25 +18,25 @@ describe("ctx.toJSON()", () => {
 
     assert.deepStrictEqual(
       {
-        "method": "POST",
-        "url": "/items",
-        "header": {
+        method: "POST",
+        url: "/items",
+        header: {
           "content-type": "text/plain",
         },
       },
-      req
+      req,
     );
 
     assert.deepStrictEqual(
       {
-        "status": 200,
-        "message": "OK",
-        "header": {
+        status: 200,
+        message: "OK",
+        header: {
           "content-type": "text/html; charset=utf-8",
           "content-length": 10,
         },
       },
-      res
+      res,
     );
   });
 });

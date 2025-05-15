@@ -11,35 +11,24 @@ import * as util from "util";
 
 const COOKIES = Symbol("context#cookies");
 
+// Custom HttpError type for typed error handling
+type HttpError = Error & {
+  status?: number;
+  statusCode?: number;
+  expose?: boolean;
+  headers?: Record<string, string>;
+  headerSent?: boolean;
+};
+
 /**
  * Context prototype.
  */
 
 const proto = {
-  /**
-   * util.inspect() implementation, which
-   * just returns the JSON output.
-   *
-   * @return {Record<string, unknown>}
-   * @api public
-   */
-
-  inspect() {
+  inspect(): Record<string, unknown> {
     if (this === proto) return this;
     return this.toJSON();
   },
-
-  /**
-   * Return JSON representation.
-   *
-   * Here we explicitly invoke .toJSON() on each
-   * object, as iteration will otherwise fail due
-   * to the getters and cause utilities such as
-   * clone() to fail.
-   *
-   * @return {Record<string, unknown>}
-   * @api public
-   */
 
   toJSON() {
     return {
@@ -52,19 +41,6 @@ const proto = {
       socket: "<original node socket>",
     };
   },
-
-  /**
-   * Similar to .throw(), adds assertion.
-   *
-   *    this.assert(this.user, 401, 'Please login!');
-   *
-   * See: https://github.com/jshttp/http-assert
-   *
-   * @param {unknown} test
-   * @param {number} status
-   * @param {string} message
-   * @api public
-   */
 
   assert: httpAssert,
 
@@ -82,25 +58,15 @@ const proto = {
    * See: https://github.com/jshttp/http-errors
    *
    * Note: `status` should only be passed as the first parameter.
-   *
-   * @param {String|Number|Error} err, msg or status
-   * @param {String|Number|Error} [err, msg or status]
-   * @param {Object} [props]
-   * @api public
    */
-
-  throw(...args) {
+  throw(...args: any[]): never {
     throw createError(...args);
   },
 
   /**
    * Default error handling.
-   *
-   * @param {Error} err
-   * @api private
    */
-
-  onerror(err) {
+  onerror(err: Error | null): void {
     // don't do anything if there is no error.
     // this allows you to pass `this.onerror`
     // to node-style callbacks.
@@ -115,9 +81,12 @@ const proto = {
     if (!isNativeError)
       err = new Error(util.format("non-error thrown: %j", err));
 
+    // Cast to HttpError for additional properties
+    const httpError = err as HttpError;
+
     let headerSent = false;
     if (this.headerSent || !this.writable) {
-      headerSent = err.headerSent = true;
+      headerSent = httpError.headerSent = true;
     }
 
     // delegate
@@ -141,12 +110,12 @@ const proto = {
     }
 
     // then set those specified
-    this.set(err.headers);
+    this.set(httpError.headers || {});
 
     // force text/plain
     this.type = "text";
 
-    let statusCode = err.status || err.statusCode;
+    let statusCode = httpError.status || httpError.statusCode;
 
     // default to 500
     if (typeof statusCode !== "number" || !statuses.message[statusCode])
@@ -154,8 +123,8 @@ const proto = {
 
     // respond
     const code = statuses.message[statusCode];
-    const msg = err.expose ? err.message : code;
-    this.status = err.status = statusCode;
+    const msg = httpError.expose ? httpError.message : code;
+    this.status = httpError.status = statusCode;
     this.length = Buffer.byteLength(msg);
     res.end(msg);
   },
@@ -174,13 +143,6 @@ const proto = {
     this[COOKIES] = _cookies;
   },
 };
-
-/**
- * Custom inspection implementation for newer Node.js versions.
- *
- * @return {Object}
- * @api public
- */
 
 /* istanbul ignore else */
 if (util.inspect.custom) {

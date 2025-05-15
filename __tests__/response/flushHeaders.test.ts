@@ -1,9 +1,9 @@
 import http from "http";
-import {AddressInfo} from "net";
+import { AddressInfo } from "net";
 import assert from "node:assert/strict";
-import {once} from "node:events";
-import {describe, it} from "node:test";
-import {PassThrough} from "stream";
+import { once } from "node:events";
+import { describe, it } from "node:test";
+import { PassThrough } from "stream";
 import request from "supertest";
 import Koa from "../..";
 
@@ -77,12 +77,12 @@ describe("ctx.flushHeaders()", () => {
     assert.strictEqual(
       res.headers["x-shouldnt-work"],
       undefined,
-      "header set after flushHeaders"
+      "header set after flushHeaders",
     );
     assert.strictEqual(
       res.headers.vary,
       undefined,
-      "header set after flushHeaders"
+      "header set after flushHeaders",
     );
   });
 
@@ -100,7 +100,7 @@ describe("ctx.flushHeaders()", () => {
       ctx.flushHeaders();
       headersFlushed = true;
       setTimeout(() => {
-        stream.end(JSON.stringify({"message": "hello!"}));
+        stream.end(JSON.stringify({ message: "hello!" }));
       }, 10);
     });
 
@@ -109,7 +109,7 @@ describe("ctx.flushHeaders()", () => {
     const port = (server.address() as AddressInfo).port;
 
     try {
-      const req = http.request({port});
+      const req = http.request({ port });
       req.end();
 
       const [res] = await once(req, "response");
@@ -124,7 +124,7 @@ describe("ctx.flushHeaders()", () => {
 
       // Wait for data with a timeout
       const timeoutPromise = new Promise<Buffer>((_, reject) =>
-        setTimeout(() => reject(new Error("Timeout waiting for data")), 100)
+        setTimeout(() => reject(new Error("Timeout waiting for data")), 100),
       );
 
       await Promise.race([dataPromise, timeoutPromise]);

@@ -1,8 +1,8 @@
 import fs from "fs";
 import assert from "node:assert/strict";
-import {describe, it} from "node:test";
+import { describe, it } from "node:test";
 import Stream from "stream";
-import {response} from "../../test-helpers/context";
+import { response } from "../../test-helpers/context";
 import CustomStream from "../../test-helpers/stream";
 
 describe("res.body=", () => {
@@ -19,10 +19,16 @@ describe("res.body=", () => {
         const res = response() as any;
 
         res.body = "<em>hey</em>";
-        assert.strictEqual("text/html; charset=utf-8", res.header["content-type"]);
+        assert.strictEqual(
+          "text/html; charset=utf-8",
+          res.header["content-type"],
+        );
 
-        res.body = {"foo": "bar"};
-        assert.strictEqual("application/json; charset=utf-8", res.header["content-type"]);
+        res.body = { foo: "bar" };
+        assert.strictEqual(
+          "application/json; charset=utf-8",
+          res.header["content-type"],
+        );
       });
     });
 
@@ -38,7 +44,10 @@ describe("res.body=", () => {
     it("should default to text", () => {
       const res = response() as any;
       res.body = "Tobi";
-      assert.strictEqual("text/plain; charset=utf-8", res.header["content-type"]);
+      assert.strictEqual(
+        "text/plain; charset=utf-8",
+        res.header["content-type"],
+      );
     });
 
     it("should set length", () => {
@@ -51,7 +60,10 @@ describe("res.body=", () => {
       it("should default to text", () => {
         const res = response() as any;
         res.body = "aklsdjf < klajsdlfjasd";
-        assert.strictEqual("text/plain; charset=utf-8", res.header["content-type"]);
+        assert.strictEqual(
+          "text/plain; charset=utf-8",
+          res.header["content-type"],
+        );
       });
     });
   });
@@ -60,7 +72,10 @@ describe("res.body=", () => {
     it("should default to html", () => {
       const res = response() as any;
       res.body = "<h1>Tobi</h1>";
-      assert.strictEqual("text/html; charset=utf-8", res.header["content-type"]);
+      assert.strictEqual(
+        "text/html; charset=utf-8",
+        res.header["content-type"],
+      );
     });
 
     it("should set length", () => {
@@ -82,7 +97,10 @@ describe("res.body=", () => {
       it("should default to html", () => {
         const res = response() as any;
         res.body = "    <h1>Tobi</h1>";
-        assert.strictEqual("text/html; charset=utf-8", res.header["content-type"]);
+        assert.strictEqual(
+          "text/html; charset=utf-8",
+          res.header["content-type"],
+        );
       });
     });
   });
@@ -98,7 +116,10 @@ describe("res.body=", () => {
 
       const res = response() as any;
       res.body = '<?xml version="1.0" encoding="UTF-8"?>\n<俄语>данные</俄语>';
-      assert.strictEqual("text/html; charset=utf-8", res.header["content-type"]);
+      assert.strictEqual(
+        "text/html; charset=utf-8",
+        res.header["content-type"],
+      );
     });
   });
 
@@ -106,13 +127,19 @@ describe("res.body=", () => {
     it("should default to an octet stream", () => {
       const res = response() as any;
       res.body = fs.createReadStream("LICENSE");
-      assert.strictEqual("application/octet-stream", res.header["content-type"]);
+      assert.strictEqual(
+        "application/octet-stream",
+        res.header["content-type"],
+      );
     });
 
     it("should support custom stream", () => {
       const res = response() as any;
       res.body = new CustomStream.Readable();
-      assert.strictEqual("application/octet-stream", res.header["content-type"]);
+      assert.strictEqual(
+        "application/octet-stream",
+        res.header["content-type"],
+      );
     });
 
     it("should add error handler to the stream, but only once", () => {
@@ -130,7 +157,10 @@ describe("res.body=", () => {
     it("should default to an octet stream", () => {
       const res = response() as any;
       res.body = Buffer.from("hey");
-      assert.strictEqual("application/octet-stream", res.header["content-type"]);
+      assert.strictEqual(
+        "application/octet-stream",
+        res.header["content-type"],
+      );
     });
 
     it("should set length", () => {
@@ -143,8 +173,11 @@ describe("res.body=", () => {
   describe("when an object is given", () => {
     it("should default to json", () => {
       const res = response() as any;
-      res.body = {"foo": "bar"};
-      assert.strictEqual("application/json; charset=utf-8", res.header["content-type"]);
+      res.body = { foo: "bar" };
+      assert.strictEqual(
+        "application/json; charset=utf-8",
+        res.header["content-type"],
+      );
     });
   });
 
@@ -152,20 +185,30 @@ describe("res.body=", () => {
     it("should default to an octet stream", () => {
       const res = response() as any;
       res.body = new ReadableStream();
-      assert.strictEqual("application/octet-stream", res.header["content-type"]);
+      assert.strictEqual(
+        "application/octet-stream",
+        res.header["content-type"],
+      );
     });
   });
 
   describe("when a Blob is given", () => {
     it("should default to an octet stream", () => {
       const res = response() as any;
-      res.body = new Blob([new Uint8Array([1, 2, 3])], {"type": "application/octet-stream"});
-      assert.strictEqual("application/octet-stream", res.header["content-type"]);
+      res.body = new Blob([new Uint8Array([1, 2, 3])], {
+        type: "application/octet-stream",
+      });
+      assert.strictEqual(
+        "application/octet-stream",
+        res.header["content-type"],
+      );
     });
 
     it("should set length", () => {
       const res = response() as any;
-      res.body = new Blob([new Uint8Array([1, 2, 3])], {"type": "application/octet-stream"});
+      res.body = new Blob([new Uint8Array([1, 2, 3])], {
+        type: "application/octet-stream",
+      });
       assert.strictEqual(3, res.header["content-length"]);
     });
   });
@@ -173,13 +216,16 @@ describe("res.body=", () => {
   describe("when a response is given", () => {
     it("should set the status", () => {
       const res = response() as any;
-      res.body = new Response(null, {"status": 201});
+      res.body = new Response(null, { status: 201 });
       assert.strictEqual(201, res.status);
     });
 
     it("should set headers", () => {
       const res = response() as any;
-      res.body = new Response(null, {"status": 200, "headers": {"x-fizz": "buzz", "x-foo": "bar"}});
+      res.body = new Response(null, {
+        status: 200,
+        headers: { "x-fizz": "buzz", "x-foo": "bar" },
+      });
       assert.strictEqual("buzz", res.header["x-fizz"]);
       assert.strictEqual("bar", res.header["x-foo"]);
     });
