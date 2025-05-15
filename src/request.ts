@@ -8,7 +8,7 @@ import { IncomingMessage } from "http";
 import * as net from "net";
 import parse from "parseurl";
 import { URL, format as stringify } from "url";
-import searchParams from "./search-params";
+import { parse as parseSearchParams } from "./search-params";
 
 import fresh from "fresh";
 import typeis from "type-is";
@@ -138,14 +138,14 @@ class Request {
   get query() {
     const str = this.querystring;
     const c = (this._querycache = this._querycache || {});
-    return c[str] || (c[str] = searchParams.parse(str));
+    return c[str] || (c[str] = parseSearchParams(str));
   }
 
   /**
    * Set query string as an object.
    */
   set query(obj: Record<string, any>) {
-    this.querystring = searchParams.stringify(obj);
+    this.querystring = stringify(obj);
   }
 
   /**
