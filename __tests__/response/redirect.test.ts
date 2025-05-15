@@ -37,11 +37,11 @@ describe("ctx.redirect(url)", () => {
   it("should auto fix not encode url", async () => {
     const app = new Koa();
 
-    app.use((ctx: any) => {
+    app.use(async (ctx: any) => {
       ctx.redirect("http://google.com/😓");
     });
 
-    const res = (await request(app.callback()).get("/")) as any;
+    const res = await request(app.callback()).get("/");
 
     assert.strictEqual(res.status, 302);
     assert.strictEqual(res.headers.location, "http://google.com/%F0%9F%98%93");
